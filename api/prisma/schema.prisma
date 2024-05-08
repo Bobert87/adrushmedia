@@ -1,0 +1,250 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Define the Driver table
+model Driver {
+  id                       Int             @id @default(autoincrement())
+  firstName                String
+  lastName                 String
+  email                    String
+  alternativeEmail         String?
+  phone                    String
+  alternativePhone         String?
+  countryISO               String          @db.VarChar(2)
+  countryName              String
+  address                  String
+  state                    String
+  city                     String
+  department               String
+  municipality             String
+  zone                     String
+  driversLicense           String
+  nationalIdentityDocument String
+  mainServiceProvided      String
+  createdAt                DateTime        @default(now())
+  updatedAt                DateTime        @default(now())
+  deletedAt                DateTime?
+  companies                CompanyDriver[]
+  car                      CarDriver[]
+}
+
+// Define the Company table
+model Company {
+  id           Int             @id @default(autoincrement())
+  name         String
+  taxNumber    String
+  bank         String
+  accountType  String
+  bankAccount  String
+  contact      String
+  contactEmail String
+  address      String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @default(now())
+  deletedAt    DateTime?
+  drivers      CompanyDriver[]
+}
+
+// Define the CompanyDriver table
+model CompanyDriver {
+  id        Int       @id @default(autoincrement())
+  companyId Int
+  driverId  Int
+  company   Company   @relation(fields: [companyId], references: [id])
+  driver    Driver    @relation(fields: [driverId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+}
+
+// Define the Car table
+model Car {
+  id            Int         @id @default(autoincrement())
+  make          String
+  model         String
+  trim          String
+  color         String
+  year          Int
+  licensePlate  String
+  vin           String
+  numberOfSeats Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
+  deletedAt     DateTime?
+  driver        CarDriver?
+  devices       CarDevice[]
+}
+
+// Define the Device table
+model Device {
+  id           Int        @id @default(autoincrement())
+  type         String
+  make         String
+  model        String
+  screenWidth  Int
+  screenHeight Int
+  resolution   String
+  os           String
+  osVersion    String
+  car          CarDevice?
+}
+
+// Define the CarDriver table
+model CarDriver {
+  id        Int       @id @default(autoincrement())
+  driverId  Int
+  carId     Int       @unique
+  driver    Driver    @relation(fields: [driverId], references: [id])
+  car       Car       @relation(fields: [carId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+}
+
+// Define the CarDevice table
+model CarDevice {
+  id        Int       @id @default(autoincrement())
+  carId     Int
+  deviceId  Int       @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+  car       Car       @relation(fields: [carId], references: [id])
+  device    Device    @relation(fields: [deviceId], references: [id])
+}
+
+// Define the Advertiser table
+model Advertiser {
+  id        Int        @id @default(autoincrement())
+  name      String
+  type      String
+  email     String
+  phone     String
+  address   String
+  budget    Decimal
+  term      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @default(now())
+  deletedAt DateTime?
+  campaigns Campaign[]
+}
+
+// Define the Campaign table
+model Campaign {
+  id           Int           @id @default(autoincrement())
+  advertiserId Int
+  name         String
+  brand        String
+  maxBid       Float
+  budget       Decimal
+  status       String
+  startDate    DateTime
+  endDate      DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now())
+  deletedAt    DateTime?
+  advertiser   Advertiser    @relation(fields: [advertiserId], references: [id])
+  ads          Ad[]
+  CampaignTag  CampaignTag[]
+}
+
+// Define the Ad table
+model Ad {
+  id               Int       @id @default(autoincrement())
+  campaignId       Int
+  name             String
+  targetDeviceType String
+  creativeFormat   String
+  creativeURL      String
+  landingURL       String
+  status           String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @default(now())
+  deletedAt        DateTime?
+  campaign         Campaign  @relation(fields: [campaignId], references: [id])
+  scheduleDetails  ScheduleDetail[]
+}
+
+// Define the Polygon table
+model Polygon {
+  id                 Int                  @id @default(autoincrement())
+  name               Int
+  polygonMap         String
+  PolygonGroupDetail PolygonGroupDetail[]
+}
+
+// Define the PolygonGroup table
+model PolygonGroup {
+  id      Int                  @id @default(autoincrement())
+  name    Int
+  details PolygonGroupDetail[]
+}
+
+// Define the PolygonGroupDetail table
+model PolygonGroupDetail {
+  id             Int          @id @default(autoincrement())
+  polygonGroupId Int
+  polygonId      Int
+  polygonGroup   PolygonGroup @relation(fields: [polygonGroupId], references: [id])
+  polygon        Polygon      @relation(fields: [polygonId], references: [id])
+}
+
+// Define the Tag table
+model Tag {
+  id          Int           @id @default(autoincrement())
+  advertiser  Int
+  name        String
+  CampaignTag CampaignTag[]
+}
+
+// Define the CampaignTag table
+model CampaignTag {
+  id         Int      @id @default(autoincrement())
+  tagId      Int
+  campaignId Int
+  tag        Tag      @relation(fields: [tagId], references: [id])
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+}
+
+// Define the Schedule table
+model Schedule {
+  id           Int       @id
+  createdAt    DateTime  @default(now())
+  deliveredAt  DateTime
+  deviceId     Int
+  driverId     Int
+  carId        Int
+  coordinate   String
+  scheduleDetails ScheduleDetail[]
+}
+
+// Define the ScheduleDetail table
+model ScheduleDetail {
+  id         Int       @id
+  scheduleId Int
+  adId       Int
+  schedule   Schedule  @relation(fields: [scheduleId], references: [id])
+  ad         Ad        @relation(fields: [adId], references: [id])
+}
+
+// Define the AdImpression table
+model AdImpression {
+  id           Int       @id
+  scheduleId   Int
+  adId         Int
+  coordinate   String
+  locationId   Float
+  deliveredAt  DateTime
+}
