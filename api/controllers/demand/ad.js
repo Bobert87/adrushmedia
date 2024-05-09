@@ -1,4 +1,4 @@
-const adModel = require('../../models/supply/ad');
+const adModel = require('../../models/demand/ad');
 
 class Ad {
   constructor() {
@@ -8,7 +8,7 @@ class Ad {
   async getById(req, res) {
     try {
       const id = req.params.id;
-      const ads = await this.adModel.getAdById(id);
+      const ads = await this.adModel.getById(id);
       res.json(ads);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -58,8 +58,19 @@ class Ad {
   async getByCampaignId(req, res) {
     try {
       const campaignId = req.params.campaignId;
-      const ads = await this.adModel.getAdsByCampaignId(campaignId);
+      const ads = await this.adModel.getByCampaignId(campaignId);
       res.json(ads);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async getByAdvertiserId(req, res) {
+    try {
+      const advertiserId = req.params.advertiserId;      
+      const ads = await this.adModel.getByAdvertiserId(advertiserId);
+      res.json(ads);
+      res.send('Not implemented');
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

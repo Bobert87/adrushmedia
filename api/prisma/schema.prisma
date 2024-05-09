@@ -55,6 +55,7 @@ model Company {
   updatedAt    DateTime        @default(now())
   deletedAt    DateTime?
   drivers      CompanyDriver[]
+  cars         CarCompany[]
 }
 
 // Define the CompanyDriver table
@@ -85,6 +86,7 @@ model Car {
   deletedAt     DateTime?
   driver        CarDriver?
   devices       CarDevice[]
+  companies     CarCompany?
 }
 
 // Define the Device table
@@ -123,6 +125,17 @@ model CarDevice {
   deletedAt DateTime?
   car       Car       @relation(fields: [carId], references: [id])
   device    Device    @relation(fields: [deviceId], references: [id])
+}
+
+model CarCompany {
+  id        Int       @id @default(autoincrement())
+  carId     Int       @unique
+  companyId Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
+  car       Car       @relation(fields: [carId], references: [id])
+  company   Company   @relation(fields: [companyId], references: [id])
 }
 
 // Define the Advertiser table

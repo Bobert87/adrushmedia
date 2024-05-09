@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const Campaign = require('../../controllers/supply/car');
+const Campaign = require('../../controllers/demand/campaign');
 
 router.get('/', async (req, res) => {
   const campaign = new Campaign();
@@ -27,16 +27,9 @@ router.delete('/:id', async (req, res) => {
   await campaign.delete(req, res)
 })
 
-router.get('/company/:companyId', async (req, res) => {
+router.get('/advertiser/:advertiserId', async (req, res) => {
   const campaign = new Campaign();
-  await campaign.getByCompanyId(req, res)
+  await campaign.getByAdvertiserId(req, res)
 })
-
-router.get('/driver/:driverId', async (req, res) => {
-  const campaign = new Campaign();
-  await campaign.getByDriverId(req, res)
-})
-
-
 
 module.exports = router;

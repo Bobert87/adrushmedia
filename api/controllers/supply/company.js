@@ -1,37 +1,59 @@
-const { PrismaClient } = require('@prisma/client');
-const db = new PrismaClient();
+const carModel = require('../../models/supply/company');
 
 class Company {
-  async getAll() {
-    return db.company.findMany();
-  }
+    constructor(){
+        this.companyModel = new carModel();
+    }
 
-  async getCompanyById(id) {
-    return db.company.findUnique({
-      where: { id: parseInt(id) },
-    });
-  }
+    async getAll(req, res){
+        try{
+            const companies = await this.companyModel.getAll();
+            res.json(companies);
+        }catch(error){
+            res.status(500).json({error: error.message});
+        }
+    }
 
-  async create(company) {
-    return db.company.create({
-      data: {
-        ...company,
-      },
-    });
-  }
+    async getById(req, res){
+        try{
+            const id = req.params.id;
+            const company = await this.companyModel.getCompanyById(id);
+            res.json(company);
+        }catch(error){
+            res.status(500).json({error: error.message});
+        }
+    }
 
-  async update(id, company) {
-    return db.company.update({
-      where: { id: parseInt(id) },
-      data: {
-        ...company,
-      },
-    });
-  }
+    async create(req, res){
+        try{
+            const company = req.body;
+            const createdCompany = await this.companyModel.create(company);
+            res.json(createdCompany);
+        }catch(error){
+            res.status(500).json({error: error.message});
+        }
+    }
 
-  async delete(id) {
-    return db.company.delete({
-      where: { id: parseInt(id) },
-    });
-  }
+    async update(req, res){
+        try{
+            const id = req.params.id;
+            const company = req.body;
+            const updatedCompany = await this.companyModel.update(id, company);
+            res.json(updatedCompany);
+        }catch(error){
+            res.status(500).json({error: error.message});
+        }
+    }
+
+    async delete(req, res){
+        try{
+            const id = req.params.id;
+            await this.companyModel.delete(id);
+            res.json({message: 'Company deleted successfully'});
+        }catch(error){
+            res.status(500).json({error: error.message});
+        }
+    }
 }
+
+module.exports = Company;

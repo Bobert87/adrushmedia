@@ -12,9 +12,18 @@ class Car {
     });
   }
 
-  async getCarsByDriverId(driverId) {
+  async getByDriverId(driverId) {
     return db.carDriver.findMany({
       where: { driverId: parseInt(driverId) },
+      include: {
+        car: true,
+      },
+    });
+  }
+
+  async getByCompanyId(companyId) {
+    return db.carCompany.findMany({
+      where: { companyId: parseInt(companyId) },
       include: {
         car: true,
       },

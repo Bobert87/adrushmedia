@@ -6,15 +6,21 @@ class Ad {
     return db.ad.findMany();
   }
 
-  async getAdById(id) {
+  async getById(id) {
     return db.ad.findUnique({
       where: { id: parseInt(id) },
     });
   }
 
-  async getAdsByCampaignId(campaignId) {
-    return db.ad.findUnique({
+  async getByCampaignId(campaignId) {
+    return db.ad.findMany({
       where: { campaignId: parseInt(campaignId) },
+    });
+  }
+
+  async getByAdvertiserId(advertiserId) {
+    return db.ad.findMany({
+      where: { campaign: { some: { advertiserId: { is: { advertiserId: parseInt(advertiserId) } } } } }
     });
   }
 

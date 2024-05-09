@@ -1,4 +1,4 @@
-const advertiserModel = require('../../models/supply/advertiser');
+const advertiserModel = require('../../models/demand/advertiser');
 
 class Advertiser {
   constructor() {

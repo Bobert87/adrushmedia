@@ -1,10 +1,19 @@
-const campaignModel = require('../../models/supply/campaign');
+const campaignModel = require('../../models/demand/campaign');
 
 class Campaign {
   constructor() {
     this.campaignModel = new campaignModel();
   }
 
+  async getByAdvertiserId(req, res) {
+    try {
+      const advertiserId = req.params.advertiserId;
+      const campaigns = await this.campaignModel.getCampaignsByAdvertiserId(advertiserId);
+      res.json(campaigns);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
   async getById(req, res) {
     try {
       const id = req.params.id;
