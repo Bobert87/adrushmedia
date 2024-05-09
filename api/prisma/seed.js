@@ -227,8 +227,142 @@ async function main() {
         }
         ]
     })
+
+    const ads = await prisma.ad.createMany({
+        data: [{
+            campaignId: 1,
+            name: 'Iphone 15',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.apple.com/iphone-15/video',
+            landingURL: 'https://www.apple.com/iphone-15/',
+            status: 'active',
+        },
+        {
+            campaignId: 1,
+            name: 'Iphone 15 pro',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.apple.com/iphone-15-pro/video',
+            landingURL: 'https://www.apple.com/iphone-15-pro/',
+            status: 'active',
+        },
+        {
+            campaignId: 2,
+            name: 'Samsung Galaxy 20',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.samsumg.com/galaxy-20/video',
+            landingURL: 'https://www.samsumg.com/galaxy-20/',
+            status: 'active',
+        },
+        {
+            campaignId: 2,
+            name: 'Samsung Galaxy 20 pro',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.samsumg.com/galaxy-20-pro/video',
+            landingURL: 'https://www.samsumg.com/galaxy-20-pro/',
+            status: 'active',
+        },
+        {
+            campaignId: 2,
+            name: 'Samsung Galaxy 20 pro ultra',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.samsumg.com/galaxy-20-pro-ultra/video',
+            landingURL: 'https://www.samsumg.com/galaxy-20-pro-ultra/',
+            status: 'active',
+        },
+        {
+            campaignId: 3,
+            name: 'Huawei P30',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.huawei.com/p30/video',
+            landingURL: 'https://www.huawei.com/p30/',
+            status: 'active',
+        },
+        {
+            campaignId: 3,
+            name: 'Huawei P30 pro',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.huawei.com/p30-pro/video',
+            landingURL: 'https://www.huawei.com/p30-pro/',
+            status: 'active',
+        },
+        {
+            campaignId: 4,
+            name: 'Cafe Rumano',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.caferumano.com/video',
+            landingURL: 'https://www.caferumano.com/',
+            status: 'active',
+        },
+        {
+            campaignId: 5,
+            name: 'Cafe Baritono',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.cafebaritono.com/video',
+            landingURL: 'https://www.cafebaritono.com/',
+            status: 'active',
+        },
+        {
+            campaignId: 6,
+            name: 'Ninja View',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.ninjaview.com/video',
+            landingURL: 'https://www.ninjaview.com/',
+            status: 'active',
+        },
+        {
+            campaignId: 7,
+            name: 'Great Story',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.greatstory.com/video',
+            landingURL: 'https://www.greatstory.com/',
+            status: 'active',
+        },
+        {
+            campaignId: 8,
+            name: 'Hill St LTD',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.hillstltd.com/video',
+            landingURL: 'https://www.hillstltd.com/',
+            status: 'active',
+        },
+        {
+            campaignId: 9,
+            name: 'DSA Adv',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.dsaadv.com/video',
+            landingURL: 'https://www.dsaadv.com/',
+            status: 'active',
+        },
+        {
+            campaignId: 10,
+            name: 'Others Inc',
+            targetDeviceType: 'rooftop',
+            creativeFormat: 'video',
+            creativeURL: 'https://www.othersinc.com/video',
+            landingURL: 'https://www.othersinc.com/',
+            status: 'active',
+        },
+        ]
+    })
+
+
+
     console.log(`Advertisers Seed -> ${JSON.stringify(advertisers)}`)
     console.log(`Campaigns Seed -> ${JSON.stringify(campaigns)}`)
+    console.log(`Ads Seed -> ${JSON.stringify(ads)}`)
 }
 
 main()
