@@ -6,7 +6,7 @@ class Company {
     return db.company.findMany();
   }
 
-  async getCompanyById(id) {
+  async getById(id) {
     return db.company.findUnique({
       where: { id: parseInt(id) },
     });

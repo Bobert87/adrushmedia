@@ -20,7 +20,7 @@ class Ad {
 
   async getByAdvertiserId(advertiserId) {
     return db.ad.findMany({
-      where: { campaign: { some: { advertiserId: { is: { advertiserId: parseInt(advertiserId) } } } } }
+      where: { campaign: { advertiser: { is: { id: parseInt(advertiserId) } } } }
     });
   }
 

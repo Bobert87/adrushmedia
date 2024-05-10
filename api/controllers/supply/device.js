@@ -1,46 +1,89 @@
-const { PrismaClient } = require('@prisma/client');
-const db = new PrismaClient();
+const deviceModel = require('../../models/supply/device');
 
 class Device {
-  async getAll() {
-    return db.device.findMany();
+  constructor() {
+    this.deviceModel = new deviceModel();
   }
 
-  async getDeviceById(id) {
-    return db.device.findUnique({
-      where: { id: parseInt(id) },
-    });
+  async getAll(req, res) {
+    try {
+      const devices = await this.deviceModel.getAll();
+      res.json(devices);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 
-  async getDevicesByCarId(carId) {
-    return db.carDevice.findMany({
-      where: { carId: parseInt(carId) },
-      include: {
-        device: true,
-      },
-    });
+  async getById(req, res) {
+    try {
+      const id = req.params.id;
+      const device = await this.deviceModel.getById(id);
+      res.json(device);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 
-  async create(device) {
-    return db.device.create({
-      data: {
-        ...device,
-      },
-    });
+  async getByVehicleId(req, res) {
+    try {
+      const vehicleId = req.params.vehicleId;
+      const devices = await this.deviceModel.getByVehicleId(vehicleId);
+      res.json(devices);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 
-  async update(id, device) {
-    return db.device.update({
-      where: { id: parseInt(id) },
-      data: {
-        ...device,
-      },
-    });
+  async getByDriverId(req, res) {
+    try {
+      const driverId = req.params.driverId;
+      const devices = await this.deviceModel.getByDriverId(driverId);
+      res.json(devices);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 
-  async delete(id) {
-    return db.device.delete({
-      where: { id: parseInt(id) },
-    });
+  async getByCompanyId(req, res) {
+    try {
+      const companyId = req.params.companyId;
+      const devices = await this.deviceModel.getByCompanyId(companyId);
+      res.json(devices);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async create(req, res) {
+    try {
+      const device = req.body;
+      const createdDevice = await this.deviceModel.create(device);
+      res.json(createdDevice);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async update(req, res) {
+    try {
+      const id = req.params.id;
+      const device = req.body;
+      const updatedDevice = await this.deviceModel.update(id, device);
+      res.json(updatedDevice);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  async delete(req, res) {
+    try {
+      const id = req.params.id;
+      await this.deviceModel.delete(id);
+      res.json({ message: 'Device deleted' });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 }
+
+module.exports = Device;

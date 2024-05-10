@@ -15,64 +15,57 @@ datasource db {
 
 // Define the Driver table
 model Driver {
-  id                       Int             @id @default(autoincrement())
-  firstName                String
-  lastName                 String
-  email                    String
-  alternativeEmail         String?
-  phone                    String
-  alternativePhone         String?
-  countryISO               String          @db.VarChar(2)
-  countryName              String
-  address                  String
-  state                    String
-  city                     String
-  department               String
-  municipality             String
-  zone                     String
-  driversLicense           String
-  nationalIdentityDocument String
-  mainServiceProvided      String
-  createdAt                DateTime        @default(now())
-  updatedAt                DateTime        @default(now())
-  deletedAt                DateTime?
-  companies                CompanyDriver[]
-  car                      CarDriver[]
+  id                 Int       @id @default(autoincrement())
+  companyId          Int
+  company            Company   @relation(fields: [companyId], references: [id])
+  firstName          String
+  lastName           String
+  email              String
+  alternativeEmail   String?
+  phone              String
+  alternativePhone   String?
+  countryISO         String    @db.VarChar(2)
+  countryName        String
+  address            String
+  state              String?
+  city               String?
+  department         String?
+  municipality       String?
+  zone               String?
+  driversLicense     String
+  driversLicenseURL  String
+  rideSharingCompany String
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now())
+  deletedAt          DateTime?
+  vehicleId          Int?
+  vehicle            Vehicle?
 }
 
 // Define the Company table
+// Individuals 
 model Company {
-  id           Int             @id @default(autoincrement())
-  name         String
-  taxNumber    String
-  bank         String
-  accountType  String
-  bankAccount  String
-  contact      String
-  contactEmail String
-  address      String
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @default(now())
-  deletedAt    DateTime?
-  drivers      CompanyDriver[]
-  cars         CarCompany[]
-}
-
-// Define the CompanyDriver table
-model CompanyDriver {
-  id        Int       @id @default(autoincrement())
-  companyId Int
-  driverId  Int
-  company   Company   @relation(fields: [companyId], references: [id])
-  driver    Driver    @relation(fields: [driverId], references: [id])
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  deletedAt DateTime?
+  id          Int       @id @default(autoincrement())
+  name        String
+  taxNumber   String
+  bank        String
+  accountType String
+  bankAccount String
+  contact     String
+  email       String
+  phone       String
+  address     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  deletedAt   DateTime?
+  vehicles    Vehicle[]
+  drivers     Driver[]
 }
 
 // Define the Car table
-model Car {
-  id            Int         @id @default(autoincrement())
+model Vehicle {
+  id            Int       @id @default(autoincrement())
+  type          String
   make          String
   model         String
   trim          String
@@ -81,17 +74,38 @@ model Car {
   licensePlate  String
   vin           String
   numberOfSeats Int
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
   deletedAt     DateTime?
-  driver        CarDriver?
-  devices       CarDevice[]
-  companies     CarCompany?
+  devices       Device[]
+  companyId     Int
+  company       Company   @relation(fields: [companyId], references: [id])
+  driverId      Int?      @unique
+  driver        Driver?   @relation(fields: [driverId], references: [id])
+}
+
+// Define the Location table
+model Location {
+  id          Int       @id @default(autoincrement())
+  type        String
+  name        String
+  address     String
+  city        String
+  state       String
+  country     String
+  postalCode  String
+  description String
+  latitude    Float
+  longitude   Float
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
+  deletedAt   DateTime?
+  devices     Device[]
 }
 
 // Define the Device table
 model Device {
-  id           Int        @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   type         String
   make         String
   model        String
@@ -100,58 +114,30 @@ model Device {
   resolution   String
   os           String
   osVersion    String
-  car          CarDevice?
-}
-
-// Define the CarDriver table
-model CarDriver {
-  id        Int       @id @default(autoincrement())
-  driverId  Int
-  carId     Int       @unique
-  driver    Driver    @relation(fields: [driverId], references: [id])
-  car       Car       @relation(fields: [carId], references: [id])
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  deletedAt DateTime?
-}
-
-// Define the CarDevice table
-model CarDevice {
-  id        Int       @id @default(autoincrement())
-  carId     Int
-  deviceId  Int       @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  deletedAt DateTime?
-  car       Car       @relation(fields: [carId], references: [id])
-  device    Device    @relation(fields: [deviceId], references: [id])
-}
-
-model CarCompany {
-  id        Int       @id @default(autoincrement())
-  carId     Int       @unique
-  companyId Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
-  deletedAt DateTime?
-  car       Car       @relation(fields: [carId], references: [id])
-  company   Company   @relation(fields: [companyId], references: [id])
+  serialNumber String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now())
+  deletedAt    DateTime?
+  vehicleId    Int?
+  vehicle      Vehicle?  @relation(fields: [vehicleId], references: [id])
+  locationId   Int?
+  location     Location? @relation(fields: [locationId], references: [id])
 }
 
 // Define the Advertiser table
 model Advertiser {
-  id        Int        @id @default(autoincrement())
-  name      String
-  type      String
-  email     String
-  phone     String
-  address   String
-  budget    Decimal
-  term      String
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @default(now())
-  deletedAt DateTime?
-  campaigns Campaign[]
+  id          Int        @id @default(autoincrement())
+  name        String
+  type        String
+  email       String
+  phone       String
+  address     String
+  creditLimit Decimal // How much credit can the advertiser use before pausing campaigns.
+  term        String // net 30, net 60, net 90, prepaid
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @default(now())
+  deletedAt   DateTime?
+  campaigns   Campaign[]
 }
 
 // Define the Campaign table
@@ -175,7 +161,7 @@ model Campaign {
 
 // Define the Ad table
 model Ad {
-  id               Int       @id @default(autoincrement())
+  id               Int              @id @default(autoincrement())
   campaignId       Int
   name             String
   targetDeviceType String
@@ -183,10 +169,10 @@ model Ad {
   creativeURL      String
   landingURL       String
   status           String
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @default(now())
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @default(now())
   deletedAt        DateTime?
-  campaign         Campaign  @relation(fields: [campaignId], references: [id])
+  campaign         Campaign         @relation(fields: [campaignId], references: [id])
   scheduleDetails  ScheduleDetail[]
 }
 
@@ -233,31 +219,32 @@ model CampaignTag {
 
 // Define the Schedule table
 model Schedule {
-  id           Int       @id
-  createdAt    DateTime  @default(now())
-  deliveredAt  DateTime
-  deviceId     Int
-  driverId     Int
-  carId        Int
-  coordinate   String
+  id              Int              @id @default(autoincrement())
+  createdAt       DateTime         @default(now())
+  deliveredAt     DateTime
+  deviceId        Int
+  driverId        Int
+  vehicleId       Int
+  locationId      Int
+  coordinate      String
   scheduleDetails ScheduleDetail[]
 }
 
 // Define the ScheduleDetail table
 model ScheduleDetail {
-  id         Int       @id
+  id         Int      @id
   scheduleId Int
   adId       Int
-  schedule   Schedule  @relation(fields: [scheduleId], references: [id])
-  ad         Ad        @relation(fields: [adId], references: [id])
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  ad         Ad       @relation(fields: [adId], references: [id])
 }
 
 // Define the AdImpression table
 model AdImpression {
-  id           Int       @id
-  scheduleId   Int
-  adId         Int
-  coordinate   String
-  locationId   Float
-  deliveredAt  DateTime
+  id          Int      @id
+  scheduleId  Int
+  adId        Int
+  coordinate  String
+  locationId  Float
+  deliveredAt DateTime
 }

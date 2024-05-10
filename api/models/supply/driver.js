@@ -6,16 +6,19 @@ class Driver {
     return db.driver.findMany();
   }
 
-  async getDriverById(id) {
+  async getById(id) {
     return db.driver.findUnique({
       where: { id: parseInt(id) },
     });
   }
 
-  async getDriverByCompanyId(companyId) {
-    return db.companyDriver.findMany({
-      where: { companyId: parseInt(companyId) },
-      include: { driver: true },
+  async getByCompanyId(companyId) {
+    return db.driver.findMany({
+      where: { vehicle: { company: { is: { companyId: parseInt(companyId) } } } },
+      include:{
+        company: true,
+        vehicle: true,
+      }
     });
   }
 
@@ -42,3 +45,5 @@ class Driver {
     });
   }
 }
+
+module.exports = Driver;

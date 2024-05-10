@@ -69,8 +69,7 @@ class Ad {
     try {
       const advertiserId = req.params.advertiserId;      
       const ads = await this.adModel.getByAdvertiserId(advertiserId);
-      res.json(ads);
-      res.send('Not implemented');
+      res.json(ads);      
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

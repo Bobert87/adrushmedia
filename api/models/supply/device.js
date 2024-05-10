@@ -6,18 +6,27 @@ class Device {
     return db.device.findMany();
   }
 
-  async getDeviceById(id) {
+  async getById(id) {
     return db.device.findUnique({
       where: { id: parseInt(id) },
     });
   }
 
-  async getDevicesByCarId(carId) {
-    return db.carDevice.findMany({
-      where: { carId: parseInt(carId) },
-      include: {
-        device: true,
-      },
+  async getByVehicleId(vehicleId) {
+    return db.device.findMany({
+      where: { vehicleId: parseInt(vehicleId) },
+    });
+  }
+
+  async getByDriverId(driverId) {
+    return db.device.findMany({
+      where: { vehicle: { driver: { is: { id: parseInt(driverId) } } } },
+    });
+  }
+
+  async getByCompanyId(companyId) {
+    return db.device.findMany({
+      where: { vehicle: { driver: { is: { companyId: parseInt(companyId) } } } },      
     });
   }
 
@@ -44,3 +53,5 @@ class Device {
     });
   }
 }
+
+module.exports = Device;

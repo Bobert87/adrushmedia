@@ -17,7 +17,7 @@ class Company {
     async getById(req, res){
         try{
             const id = req.params.id;
-            const company = await this.companyModel.getCompanyById(id);
+            const company = await this.companyModel.getById(id);
             res.json(company);
         }catch(error){
             res.status(500).json({error: error.message});
