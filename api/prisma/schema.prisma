@@ -40,6 +40,7 @@ model Driver {
   deletedAt          DateTime?
   vehicleId          Int?
   vehicle            Vehicle?
+  defaultGeoZoneId   Int?
 }
 
 // Define the Company table
@@ -182,6 +183,7 @@ model Advertiser {
   address     String
   creditLimit Decimal // How much credit can the advertiser use before pausing campaigns.
   term        String // net 30, net 60, net 90, prepaid
+  timezone    String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @default(now())
   deletedAt   DateTime?
@@ -276,6 +278,8 @@ model CampaignTag {
 
 enum FilterType {
   GEO
+  DEVICE
+  VEHICLE
   HOURS
   DAYS
   WEATHER

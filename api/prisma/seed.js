@@ -1152,11 +1152,12 @@ async function main() {
                 name: 'Premium Zone',
                 type: 'GEO',
                 operation: 'IN',
-                value: '1,2',
-            }
-            
+                value: '1',
+            },           
         ]
     })
+
+    
 
 
     console.log(`Advertisers Seed -> ${JSON.stringify(advertisers)}`)
@@ -1172,6 +1173,7 @@ async function main() {
     console.log(`Polygon Seed -> ${JSON.stringify(polygons)}`)
     console.log(`Polygon Group Seed -> ${JSON.stringify(geoZones)}`)
     console.log(`Polygon Group Polygons Seed -> ${JSON.stringify(polygonSets)}`)    
+    console.log(`Filters Seed -> ${JSON.stringify(filters)}`)    
 
 
 }
