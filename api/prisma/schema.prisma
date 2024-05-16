@@ -62,10 +62,20 @@ model Company {
   drivers     Driver[]
 }
 
+enum VehicleType {
+  SEDAN
+  HATCHBACK
+  SUV
+  TRUCK
+  VAN
+  BUS
+  PUBLIC_TRANSPORT
+}
+
 // Define the Car table
 model Vehicle {
   id            Int       @id @default(autoincrement())
-  type          String
+  type          VehicleType
   make          String
   model         String
   trim          String
@@ -84,10 +94,36 @@ model Vehicle {
   driver        Driver?   @relation(fields: [driverId], references: [id])
 }
 
+enum LocationType {  
+  AIRPORT
+  HOTEL
+  RESTAURANT
+  MALL
+  GAS_STATION
+  PARK
+  HOSPITAL  
+  PHARMACY
+  GYM      
+  BAR  
+  CAFE
+  BAKERY
+  GROCERY
+  SUPERMARKET
+  CONVENIENCE_STORE  
+  SHOPPING_MALL  
+  BUS_STATION
+  TRAIN_STATION
+  PARKING
+  CAR_WASH  
+  ROAD
+  HIGHWAY
+  WALKWAY      
+}
+
 // Define the Location table
 model Location {
   id          Int       @id @default(autoincrement())
-  type        String
+  type        LocationType
   name        String
   address     String
   city        String
@@ -103,10 +139,16 @@ model Location {
   devices     Device[]
 }
 
+enum DeviceType {
+  CARTOP
+  TABLET  
+  BILLBOARD  
+}
+
 // Define the Device table
 model Device {
   id           Int       @id @default(autoincrement())
-  type         String
+  type         DeviceType
   make         String
   model        String
   screenWidth  Int
@@ -124,11 +166,17 @@ model Device {
   location     Location? @relation(fields: [locationId], references: [id])
 }
 
+enum AdvertiserType {
+  AGENCY
+  BRAND
+  INDIVIDUAL  
+}
+
 // Define the Advertiser table
 model Advertiser {
   id          Int        @id @default(autoincrement())
   name        String
-  type        String
+  type        AdvertiserType
   email       String
   phone       String
   address     String
@@ -140,23 +188,33 @@ model Advertiser {
   campaigns   Campaign[]
 }
 
+
+enum CampaignStatus {
+  DRAFT
+  PENDING
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
 // Define the Campaign table
 model Campaign {
-  id           Int           @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   advertiserId Int
   name         String
   brand        String
   maxBid       Float
   budget       Decimal
-  status       String
+  status       CampaignStatus
   startDate    DateTime
   endDate      DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @default(now())
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @default(now())
   deletedAt    DateTime?
-  advertiser   Advertiser    @relation(fields: [advertiserId], references: [id])
+  advertiser   Advertiser     @relation(fields: [advertiserId], references: [id])
   ads          Ad[]
-  CampaignTag  CampaignTag[]
+  tags         CampaignTag[]  
+  filters      Filter[]
 }
 
 // Define the Ad table
@@ -178,32 +236,31 @@ model Ad {
 
 // Define the Polygon table
 model Polygon {
-  id                 Int                  @id @default(autoincrement())
-  name               Int
-  polygonMap         String
-  PolygonGroupDetail PolygonGroupDetail[]
+  id                  Int           @id @default(autoincrement())
+  name                String
+  coordinates         Float[]
+  polygonGroupPolygon PolygonSet[]
 }
 
 // Define the PolygonGroup table
-model PolygonGroup {
-  id      Int                  @id @default(autoincrement())
-  name    Int
-  details PolygonGroupDetail[]
+model GeoZone {
+  id           Int            @id @default(autoincrement())
+  name         String
+  areas        PolygonSet[]
+  
 }
 
-// Define the PolygonGroupDetail table
-model PolygonGroupDetail {
-  id             Int          @id @default(autoincrement())
-  polygonGroupId Int
-  polygonId      Int
-  polygonGroup   PolygonGroup @relation(fields: [polygonGroupId], references: [id])
-  polygon        Polygon      @relation(fields: [polygonId], references: [id])
+model PolygonSet {
+  id        Int     @id @default(autoincrement())
+  polygonId Int     @map("polygonId")
+  zoneId    Int     @map("polygonGroupId")
+  polygon   Polygon @relation(fields: [polygonId], references: [id])
+  zone      GeoZone    @relation(fields: [zoneId], references: [id])	
 }
 
 // Define the Tag table
 model Tag {
   id          Int           @id @default(autoincrement())
-  advertiser  Int
   name        String
   CampaignTag CampaignTag[]
 }
@@ -217,16 +274,49 @@ model CampaignTag {
   campaign   Campaign @relation(fields: [campaignId], references: [id])
 }
 
+enum FilterType {
+  GEO
+  HOURS
+  DAYS
+  WEATHER
+}
+
+enum FilterOperations {
+  EQUALS
+  NOT_EQUALS
+  GREATER_THAN
+  LESS_THAN
+  GREATER_THAN_OR_EQUAL
+  LESS_THAN_OR_EQUAL
+  BETWEEN
+  NOT_BETWEEN
+  IN
+  NOT_IN
+  LIKE
+  NOT_LIKE
+  IS_NULL
+  IS_NOT_NULL
+}
+
+model Filter {
+  id         Int      @id @default(autoincrement())
+  name       String
+  type       FilterType
+  operation  FilterOperations
+  value      String
+  campaignId Int
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+}
+
 // Define the Schedule table
 model Schedule {
   id              Int              @id @default(autoincrement())
   createdAt       DateTime         @default(now())
   deliveredAt     DateTime
   deviceId        Int
-  driverId        Int
-  vehicleId       Int
-  locationId      Int
-  coordinate      String
+  latitude        Float
+  longitude       Float
+  h3Index         String
   scheduleDetails ScheduleDetail[]
 }
 
