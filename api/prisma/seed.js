@@ -2,97 +2,98 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function main() {
+
     const advertisers = await prisma.advertiser.createMany({
 
         data: [{
             name: 'Great Ads',
             type: 'AGENCY',
+            status: 'ACTIVE',
             email: 'info@greatads.com',
             phone: '123-456-7890',
             address: '123 Main St, Anytown, USA',
-            creditLimit: 1000000,
-            term: 'net 30'
+            term: 'NET_30'            
         },
         {
             name: 'Grupo MK',
             type: 'AGENCY',
+            status: 'ACTIVE',
             email: 'info@grupomk.com',
             phone: '123-456-7890',
             address: '123 Main St, Anytown, USA',
-            creditLimit: 1000000,
-            term: 'net 60'
+            term: 'NET_60'
         },
         {
             name: 'Ninja View',
             type: 'AGENCY',
+            status: 'ACTIVE',
             email: 'info@ninjaview.com',
             phone: '123-456-7891',
             address: '124 Main St, Anytown, USA',
-            creditLimit: 2000000,
-            term: 'prepaid'
+            term: 'PREPAID'
         },
         {
             name: 'Great Story',
             type: 'AGENCY',
+            status: 'ACTIVE',
             email: 'info@greatstory.com',
             phone: '123-456-7892',
             address: '125 Main St, Anytown, USA',
-            creditLimit: 3000000,
-            term: 'net 30'
+            term: 'NET_30'
         },
         {
             name: 'Hill St LTD',
             type: 'AGENCY',
+            status: 'ACTIVE',
             email: 'info@hillstltd.com',
             phone: '123-456-7893',
             address: '126 Main St, Anytown, USA',
-            creditLimit: 4000000,
-            term: 'net 30'
+            term: 'NET_30'
         },
         {
             name: 'DSA Adv',
             type: 'AGENCY',
+            status: 'ACTIVE',
             email: 'info@dsaadv.com',
             phone: '123-456-7894',
             address: '127 Main St, Anytown, USA',
-            creditLimit: 5000000,
-            term: 'net 30'
+            term: 'NET_30'
         },
         {
             name: 'Others Inc',
             type: 'AGENCY',
+            status: 'INACTIVE',
             email: 'info@othersinc.com',
             phone: '123-456-7895',
             address: '128 Main St, Anytown, USA',
-            creditLimit: 6000000,
-            term: 'net 30'
+            term: 'NET_30'
         },
         {
             name: 'Finally GA',
             type: 'AGENCY',
+            status: 'MAXED_OUT',
             email: 'info@finallyga.com',
             phone: '123-456-7896',
-            address: '129 Main St, Anytown, USA',
-            creditLimit: 7000000,
-            term: 'net 30'
+            address: '129 Main St, Anytown, USA',            
+            term: 'NET_30'
         },
         {
             name: 'EP Inc',
             type: 'AGENCY',
+            status: 'SUSPENDED',
             email: 'info@epinc.com',
             phone: '123-456-7897',
-            address: '130 Main St, Anytown, USA',
-            creditLimit: 8000000,
-            term: 'net 30'
+            address: '130 Main St, Anytown, USA',            
+            term: 'NET_30'
         },
         {
             name: 'Kualus',
             type: 'AGENCY',
+            status: 'ACTIVE',
             email: 'info@kualus.com',
             phone: '123-456-7898',
-            address: '131 Main St, Anytown, USA',
-            creditLimit: 9000000,
-            term: 'net 30'
+            address: '131 Main St, Anytown, USA',            
+            term: 'NET_30'
         }
         ]
     })
@@ -358,7 +359,7 @@ async function main() {
         ]
     })
 
-    const companies = await prisma.company.createMany({
+    const publishers = await prisma.publisher.createMany({
         data: [{
             name: 'Blue Taxi Company',
             taxNumber: '1234567890',
@@ -369,6 +370,9 @@ async function main() {
             email: 'blue@taxi.com',
             phone: '123-456-7890',
             address: '123 Main St, Anytown, USA',
+            term: 'NET_30',
+            creditLimit: 1000,
+            status: 'ACTIVE',
         },
         {
             name: 'Yellow Taxi Company',
@@ -380,6 +384,9 @@ async function main() {
             email: 'yellow@taxily.com',
             phone: '123-456-7891',
             address: '124 Main St, Anytown, USA',
+            term: 'NET_30',
+            creditLimit: 100,
+            status: 'ACTIVE',
         },
         {
             name: 'Red Taxi Company',
@@ -391,14 +398,46 @@ async function main() {
             email: 'why@canada.co',
             phone: '123-456-7892',
             address: '125 Main St, Anytown, USA',
+            term: 'NET_30',
+            creditLimit: 10000,
+            status: 'ACTIVE',
         },
+        ]
+    })
+
+    const assets = await prisma.asset.createMany({
+        data:[
+            {   
+                publisherId: 1,             
+                type: 'FLEET',
+                name: 'Fleet 1 - Blue Taxi Company',
+                description: '5 Toyota Corollas - 123-456, 123-457, 123-458, 123-459, 123-460',
+            },
+            {
+                publisherId: 1,         
+                type: 'LOCATIONS',
+                name: 'Restaurant - Big Panda',
+                description: 'Assian Food - 123 Main St, Anytown, USA',
+            },
+            {
+                publisherId: 2,
+                type: 'FLEET',
+                name: 'Honda Fit - 123-461',
+                description: 'Toyota Corolla - 123-456',                
+            },
+            {
+                publisherId: 3,
+                type: 'FLEET',
+                name: 'Shuttles',
+                description: 'Shutles to the airport - 123 Main St, Anytown, USA',                
+            }
         ]
     })
 
     const drivers = await prisma.driver.createMany({
         data: [
             {
-                companyId: 1,
+                
                 vehicleId: 1,
                 firstName: 'John',
                 lastName: 'Doe',
@@ -419,7 +458,7 @@ async function main() {
                 rideSharingCompany: 'Uber',
             },
             {
-                companyId: 1,
+                
                 vehicleId: 2,
                 firstName: 'Jane',
                 lastName: 'Doe',
@@ -438,8 +477,7 @@ async function main() {
                 driversLicense: '1234567891',
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
-            }, {
-                companyId: 1,
+            }, {                
                 vehicleId: 3,
                 firstName: 'John',
                 lastName: 'Smith',
@@ -459,8 +497,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {
-                companyId: 2,
+            {                
                 vehicleId: 4,
                 firstName: 'Arturo',
                 lastName: 'Perez',
@@ -480,8 +517,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'InDriver',
             },
-            {
-                companyId: 2,
+            {                
                 vehicleId: 5,
                 firstName: 'Maria',
                 lastName: 'Garcia',
@@ -501,8 +537,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'InDriver',
             },
-            {
-                companyId: 3,
+            {                
                 vehicleId: 6,
                 firstName: 'Juan',
                 lastName: 'Perez',
@@ -522,8 +557,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {
-                companyId: 3,
+            {                
                 vehicleId: 7,
                 firstName: 'Luca',
                 lastName: 'Alvarez',
@@ -544,7 +578,7 @@ async function main() {
                 rideSharingCompany: 'Uber',
             },
             {
-                companyId: 3,
+
                 vehicleId: 8,
                 firstName: 'Sara',
                 lastName: 'Gomez',
@@ -564,8 +598,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {
-                companyId: 3,
+            {                
                 vehicleId: 9,
                 firstName: 'Luis',
                 lastName: 'Garcia',
@@ -585,8 +618,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {
-                companyId: 3,
+            {                
                 vehicleId: 10,
                 firstName: 'Maria',
                 lastName: 'De Leon',
@@ -606,8 +638,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {
-                companyId: 3,
+            {                
                 firstName: 'Alvaro',
                 lastName: 'Lopez',
                 email: 'allo@que.tal',
@@ -628,11 +659,11 @@ async function main() {
             }
         ]
     })
-
+    
     const vehicles = await prisma.vehicle.createMany({
         data: [
-            {
-                companyId: 1,
+            {                
+                assetId: 1,
                 driverId: 1,
                 make: 'Toyota',
                 model: 'Corolla',
@@ -644,8 +675,8 @@ async function main() {
                 vin: '1234567890',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 1,
+            {              
+                assetId: 1,  
                 driverId: 2,
                 make: 'Honda',
                 model: 'Civic',
@@ -657,8 +688,8 @@ async function main() {
                 vin: '1234567891',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 1,
+            {              
+                assetId: 1,  
                 driverId: 3,
                 make: 'Ford',
                 model: 'Fusion',
@@ -670,8 +701,8 @@ async function main() {
                 vin: '1234567892',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 2,
+            {   
+                assetId: 1,             
                 driverId: 4,
                 make: 'Chevrolet',
                 model: 'Malibu',
@@ -683,8 +714,8 @@ async function main() {
                 vin: '1234567893',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 2,
+            {              
+                assetId: 1,  
                 driverId: 5,
                 make: 'Nissan',
                 model: 'Altima',
@@ -696,8 +727,8 @@ async function main() {
                 vin: '1234567894',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 3,
+            {              
+                assetId: 3,  
                 driverId: 6,
                 make: 'Hyundai',
                 model: 'Sonata',
@@ -709,8 +740,8 @@ async function main() {
                 vin: '1234567895',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 1,
+            {              
+                assetId: 1,  
                 driverId: 7,
                 make: 'Kia',
                 model: 'Sportage',
@@ -722,8 +753,8 @@ async function main() {
                 vin: '1234567896',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 1,
+            {              
+                assetId: 1,  
                 driverId: 8,
                 make: 'Volkswagen',
                 model: 'Passat',
@@ -735,8 +766,8 @@ async function main() {
                 vin: '1234567897',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 1,
+            {              
+                assetId: 1,  
                 driverId: 9,
                 make: 'Subaru',
                 model: 'Legacy',
@@ -748,8 +779,8 @@ async function main() {
                 vin: '1234567898',
                 numberOfSeats: 5,
             },
-            {
-                companyId: 1,
+            {              
+                assetId: 1,  
                 driverId: 10,
                 make: 'Isuzu',
                 model: 'DMax',
@@ -764,154 +795,66 @@ async function main() {
         ]
     })
 
-    const devices = await prisma.device.createMany({
+    const assetVehicles = await prisma.assetVehicle.createMany({
         data: [
             {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 1',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: '1234567890',
+                assetId: 1,
                 vehicleId: 1,
             },
             {
-                type: 'TABLET',
-                make: 'HuaWei',
-                model: 'Mate Pad',
-                screenWidth: 2560,
-                screenHeight: 1440,
-                resolution: '2560x1440',
-                os: 'android',
-                osVersion: '11',
-                serialNumber: '1234567330',
-                vehicleId: 1,
-            },
-            {
-                type: 'TABLET',
-                make: 'Samsung',
-                model: 'Galaxy Tab',
-                screenWidth: 1920,
-                screenHeight: 1080,
-                resolution: '1920x1080',
-                os: 'android',
-                osVersion: '10',
-                serialNumber: '1234567331',
+                assetId: 1,
                 vehicleId: 2,
             },
             {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 2',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: '1223567891',
+                assetId: 1,
                 vehicleId: 3,
             },
             {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF23121',
+                assetId: 1,
                 vehicleId: 4,
             },
             {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF23122',
+                assetId: 1,
                 vehicleId: 5,
             },
             {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF23123',
+                assetId: 3,
                 vehicleId: 6,
             },
             {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF99989',
+                assetId: 4,
                 vehicleId: 7,
             },
             {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF99990',
+                assetId: 4,
                 vehicleId: 8,
             },
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 8',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF99991',
-                vehicleId: 9,
-            }
         ]
     })
 
     const locations = await prisma.location.createMany({
         data: [
             {
-                type: 'WALKWAY',
-                name: 'Roosevelt Walkway',
+                type: 'RESTAURANT',
+                name: 'Big Panda',
                 address: 'Roosevelt Ave, Zona 11 , GT',
                 city: 'Guatemala City',
                 state: 'Guatemala',
                 country: 'Guatemala',
                 postalCode: '01011',
-                description: 'Roosevelt Walkway is a popular walkway in the city',
+                description: 'Near Miraflores',
                 latitude: 14.5895,
                 longitude: -90.5518,
             },
             {
-                type: 'WALKWAY',
-                name: 'La Reforma Walkway',
+                type: 'BAR',
+                name: 'SAKE SEDEAKI',
                 address: 'Reforma Ave, Zona 9 , GT',
                 city: 'Guatemala City',
                 state: 'Guatemala',
                 country: 'Guatemala',
                 postalCode: '01009',
-                description: 'La Reforma Walkway is a popular walkway in the city',
+                description: 'Sake Bar Near Reforma Avenue',
                 latitude: 14.5895,
                 longitude: -90.5518,
             },
@@ -1002,6 +945,144 @@ async function main() {
         ]
     })
 
+    const assetLocations = await prisma.assetLocation.createMany({
+        data: [
+            {
+                assetId: 2,
+                locationId: 1,
+            },
+            {
+                assetId: 2,
+                locationId: 2,
+            },            
+        ]
+    })
+  
+    const devices = await prisma.device.createMany({
+        data: [
+            {
+                type: 'CARTOP',
+                make: 'byd',
+                model: 'model 1',
+                screenWidth: 1080,
+                screenHeight: 460,
+                resolution: '1080x460',
+                os: 'ubuntu',
+                osVersion: '20.04',
+                serialNumber: '1234567890',
+                
+            },
+            {
+                type: 'TABLET',
+                make: 'HuaWei',
+                model: 'Mate Pad',
+                screenWidth: 2560,
+                screenHeight: 1440,
+                resolution: '2560x1440',
+                os: 'android',
+                osVersion: '11',
+                serialNumber: '1234567330',
+                
+            },
+            {
+                type: 'TABLET',
+                make: 'Samsung',
+                model: 'Galaxy Tab',
+                screenWidth: 1920,
+                screenHeight: 1080,
+                resolution: '1920x1080',
+                os: 'android',
+                osVersion: '10',
+                serialNumber: '1234567331',
+                
+            },
+            {
+                type: 'CARTOP',
+                make: 'byd',
+                model: 'model 2',
+                screenWidth: 1080,
+                screenHeight: 460,
+                resolution: '1080x460',
+                os: 'ubuntu',
+                osVersion: '20.04',
+                serialNumber: '1223567891',
+                
+            },
+            {
+                type: 'CARTOP',
+                make: 'byd',
+                model: 'model 3',
+                screenWidth: 1080,
+                screenHeight: 460,
+                resolution: '1080x460',
+                os: 'ubuntu',
+                osVersion: '20.04',
+                serialNumber: 'AAEFSDF23121',
+                
+            },
+            {
+                type: 'CARTOP',
+                make: 'byd',
+                model: 'model 3',
+                screenWidth: 1080,
+                screenHeight: 460,
+                resolution: '1080x460',
+                os: 'ubuntu',
+                osVersion: '20.04',
+                serialNumber: 'AAEFSDF23122',
+                
+            },
+            {
+                type: 'CARTOP',
+                make: 'byd',
+                model: 'model 3',
+                screenWidth: 1080,
+                screenHeight: 460,
+                resolution: '1080x460',
+                os: 'ubuntu',
+                osVersion: '20.04',
+                serialNumber: 'AAEFSDF23123',
+                
+            },
+            {
+                type: 'CARTOP',
+                make: 'byd',
+                model: 'model 3',
+                screenWidth: 1080,
+                screenHeight: 460,
+                resolution: '1080x460',
+                os: 'ubuntu',
+                osVersion: '20.04',
+                serialNumber: 'AAEFSDF99989',
+                
+            },
+            {
+                type: 'CARTOP',
+                make: 'byd',
+                model: 'model 3',
+                screenWidth: 1080,
+                screenHeight: 460,
+                resolution: '1080x460',
+                os: 'ubuntu',
+                osVersion: '20.04',
+                serialNumber: 'AAEFSDF99990',
+                
+            },
+            {
+                type: 'CARTOP',
+                make: 'byd',
+                model: 'model 8',
+                screenWidth: 1080,
+                screenHeight: 460,
+                resolution: '1080x460',
+                os: 'ubuntu',
+                osVersion: '20.04',
+                serialNumber: 'AAEFSDF99991',
+                
+            }
+        ]
+    })
+   
     const tags = await prisma.tag.createMany({
         data: [
             {
@@ -1102,7 +1183,7 @@ async function main() {
 
     })
 
-    const geoZones = await prisma.geoZone.createMany(
+    const Zones = await prisma.zone.createMany(
         {
             data: [
                 {
@@ -1118,7 +1199,7 @@ async function main() {
         }
     )
 
-    const polygonSets = await prisma.polygonSet.createMany(
+    const polygonZone = await prisma.polygoneZone.createMany(
         {
             data: [
                 {
@@ -1154,6 +1235,27 @@ async function main() {
                 operation: 'IN',
                 value: '1',
             },           
+            {
+                campaignId: 1,
+                name: 'Autos',
+                type: 'DEVICE',
+                operation: 'EQUALS',
+                value: 'CARTOP',
+            },
+            {
+                campaignId: 2,
+                name: 'SUV',
+                type: 'VEHICLE',
+                operation: 'EQUALS',
+                value: 'SUV',
+            },      
+            {
+                campaignId: 3,
+                name: 'Nights',
+                type: 'HOURS',
+                operation: 'BETWEEN',
+                value: '18:00, 23:59',
+            },      
         ]
     })
 
@@ -1163,16 +1265,19 @@ async function main() {
     console.log(`Advertisers Seed -> ${JSON.stringify(advertisers)}`)
     console.log(`Campaigns Seed -> ${JSON.stringify(campaigns)}`)
     console.log(`Ads Seed -> ${JSON.stringify(ads)}`)
-    console.log(`Company Seed -> ${JSON.stringify(companies)}`)
+    console.log(`Publishers Seed -> ${JSON.stringify(publishers)}`)
+    console.log(`Assets Seed -> ${JSON.stringify(assets)}`)
     console.log(`Vehicles Seed -> ${JSON.stringify(vehicles)}`)
+    console.log(`Assets Vehicles -> ${JSON.stringify(assetVehicles)}`)
     console.log(`Drivers Seed -> ${JSON.stringify(drivers)}`)
     console.log(`Location Seed -> ${JSON.stringify(locations)}`)
+    console.log(`Assets Locations -> ${JSON.stringify(assetLocations)}`)
     console.log(`Devices Seed -> ${JSON.stringify(devices)}`)
     console.log(`Tags Seed -> ${JSON.stringify(tags)}`)
     console.log(`Campaign Tags Seed -> ${JSON.stringify(campaignsTags)}`)
     console.log(`Polygon Seed -> ${JSON.stringify(polygons)}`)
-    console.log(`Polygon Group Seed -> ${JSON.stringify(geoZones)}`)
-    console.log(`Polygon Group Polygons Seed -> ${JSON.stringify(polygonSets)}`)    
+    console.log(`Zones Seed -> ${JSON.stringify(Zones)}`)
+    console.log(`Polygon Zones Seed -> ${JSON.stringify(polygonZone)}`)    
     console.log(`Filters Seed -> ${JSON.stringify(filters)}`)    
 
 
