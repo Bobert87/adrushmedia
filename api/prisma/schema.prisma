@@ -15,7 +15,7 @@ datasource db {
 
 // Define the Driver table
 model Driver {
-  id                 Int       @id @default(autoincrement())  
+  id                 Int       @id @default(autoincrement())
   firstName          String
   lastName           String
   email              String
@@ -66,54 +66,49 @@ model Publisher {
   status      AccountStatus
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @default(now())
-  deletedAt   DateTime?  
+  deletedAt   DateTime?
   timezone    String?
   assets      Asset[]
 }
 
 enum AssetType {
-  FLEET
-  LOCATIONS
+  AUTO
+  LOCATION
 }
 
 // Define the Asset table
 model Asset {
-  id          Int         @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   type        AssetType
   name        String
   description String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @default(now())
   deletedAt   DateTime?
   publisherId Int
-  publisher   Publisher   @relation(fields: [publisherId], references: [id])  
-  vehicles     AssetVehicle[]
-  locations   AssetLocation[]  
+  publisher   Publisher @relation(fields: [publisherId], references: [id])
+  devices     Device[]
+  assetDetails AssetDetails[]
 }
 
-model AssetVehicle {
-  id        Int      @id @default(autoincrement())
+enum FieldType {
+  STRING
+  FLOAT
+  INT
+  BOOLEAN
+  DATE  
+}
+
+model AssetDetails {
+  id        Int       @id @default(autoincrement())
   assetId   Int
-  vehicleId Int
-  asset     Asset    @relation(fields: [assetId], references: [id])
-  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
-
-}
-
-model VehiclePlacement {
-  id        Int      @id @default(autoincrement())
-  vehicleId Int
-  placementId Int
-  vehicle   Vehicle  @relation(fields: [vehicleId], references: [id])
-  placement Placement @relation(fields: [placementId], references: [id])
-}
-
-model AssetLocation {
-  id        Int      @id @default(autoincrement())
-  assetId   Int
-  locationId Int
-  asset     Asset    @relation(fields: [assetId], references: [id])
-  location  Location  @relation(fields: [locationId], references: [id])
+  asset     Asset     @relation(fields: [assetId], references: [id])
+  field     String
+  type      FieldType
+  value     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+  deletedAt DateTime?
 }
 
 enum PlacementType {
@@ -123,20 +118,6 @@ enum PlacementType {
   VEHICLE_BACK
   LOCATION_OUTDOOR
   LOCATION_INDOOR
-}
-
-// Define the Placement table
-model Placement {
-  id        Int           @id @default(autoincrement())
-  name      String
-  type      PlacementType
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @default(now())
-  deletedAt DateTime?    
-  deviceId  Int? @unique
-  device    Device?        @relation(fields: [deviceId], references: [id])
-  vehicles  VehiclePlacement[]
-  locations LocationPlacement[]
 }
 
 enum VehicleType {
@@ -164,11 +145,9 @@ model Vehicle {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @default(now())
   deletedAt     DateTime?
-  placements    VehiclePlacement[]  
   driverId      Int?        @unique
-  driver        Driver?     @relation(fields: [driverId], references: [id])  
+  driver        Driver?     @relation(fields: [driverId], references: [id])
   assetId       Int
-  assets        AssetVehicle[]
 }
 
 enum LocationType {
@@ -197,34 +176,6 @@ enum LocationType {
   WALKWAY
 }
 
-// Define the Location table
-model Location {
-  id          Int          @id @default(autoincrement())
-  type        LocationType
-  name        String
-  address     String
-  city        String
-  state       String
-  country     String
-  postalCode  String
-  description String
-  latitude    Float
-  longitude   Float
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @default(now())
-  deletedAt   DateTime?  
-  placements LocationPlacement[]
-  assets      AssetLocation[]
-}
-
-model LocationPlacement {
-  id          Int      @id @default(autoincrement())
-  locationId  Int
-  placementId Int
-  location    Location  @relation(fields: [locationId], references: [id])
-  placement   Placement  @relation(fields: [placementId], references: [id])
-}
-
 enum DeviceType {
   CARTOP
   TABLET
@@ -232,10 +183,17 @@ enum DeviceType {
   SMARTTV
 }
 
+enum DeviceStatus {
+  ACTIVE
+  INACTIVE
+  MAINTENANCE  
+}
+
 // Define the Device table
 model Device {
   id           Int        @id @default(autoincrement())
   type         DeviceType
+  status       DeviceStatus
   make         String
   model        String
   screenWidth  Int
@@ -244,11 +202,11 @@ model Device {
   os           String
   osVersion    String
   serialNumber String
+  assetId      Int
+  asset        Asset      @relation(fields: [assetId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @default(now())
-  deletedAt    DateTime?    
-  placement    Placement?
-  
+  deletedAt    DateTime?
 }
 
 enum AdvertiserType {
@@ -347,8 +305,8 @@ model Zone {
 
 model PolygoneZone {
   id        Int     @id @default(autoincrement())
-  polygonId Int     
-  zoneId    Int     
+  polygonId Int
+  zoneId    Int
   polygon   Polygon @relation(fields: [polygonId], references: [id])
   zone      Zone    @relation(fields: [zoneId], references: [id])
 }
