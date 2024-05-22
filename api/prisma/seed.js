@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client')
+const { PrismaClient, Placement } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function main() {
@@ -12,7 +12,7 @@ async function main() {
             email: 'info@greatads.com',
             phone: '123-456-7890',
             address: '123 Main St, Anytown, USA',
-            term: 'NET_30'            
+            term: 'NET_30'
         },
         {
             name: 'Grupo MK',
@@ -74,7 +74,7 @@ async function main() {
             status: 'MAXED_OUT',
             email: 'info@finallyga.com',
             phone: '123-456-7896',
-            address: '129 Main St, Anytown, USA',            
+            address: '129 Main St, Anytown, USA',
             term: 'NET_30'
         },
         {
@@ -83,7 +83,7 @@ async function main() {
             status: 'SUSPENDED',
             email: 'info@epinc.com',
             phone: '123-456-7897',
-            address: '130 Main St, Anytown, USA',            
+            address: '130 Main St, Anytown, USA',
             term: 'NET_30'
         },
         {
@@ -92,7 +92,7 @@ async function main() {
             status: 'ACTIVE',
             email: 'info@kualus.com',
             phone: '123-456-7898',
-            address: '131 Main St, Anytown, USA',            
+            address: '131 Main St, Anytown, USA',
             term: 'NET_30'
         }
         ]
@@ -361,7 +361,7 @@ async function main() {
 
     const publishers = await prisma.publisher.createMany({
         data: [{
-            name: 'Blue Taxi Company',
+            name: 'Big Publisher',
             taxNumber: '1234567890',
             bank: 'Bank of America',
             bankAccount: '123456789',
@@ -375,7 +375,7 @@ async function main() {
             status: 'ACTIVE',
         },
         {
-            name: 'Yellow Taxi Company',
+            name: 'Medium Publisher',
             taxNumber: '1234567891',
             bank: 'Bank of England',
             bankAccount: '123456790',
@@ -389,7 +389,7 @@ async function main() {
             status: 'ACTIVE',
         },
         {
-            name: 'Red Taxi Company',
+            name: 'Taxi Top Publisher',
             taxNumber: '1234567892',
             bank: 'Bank of Canada',
             bankAccount: '123456791',
@@ -405,40 +405,773 @@ async function main() {
         ]
     })
 
-    const assets = await prisma.asset.createMany({
-        data:[
-            {   
-                publisherId: 1,             
-                type: 'AUTO',
-                name: 'Fleet 1 - Blue Taxi Company',
-                description: 'Toyota Corollas - 123-456',
+    const assetsArray = [
+        {
+            publisherId: 1,
+            type: 'LOCATION',
+            name: 'Big Panda Z11',
+            description: 'Big Panda Restaurant Near Miraflores',
+            assetDetails: {
+                create: [
+                    { field: "type", type: "STRING", value: "RESTAURANT" },
+                    { field: "name", type: "STRING", value: "Big Panda" },
+                    { field: "address", type: "STRING", value: "Roosevelt Ave, Zona 11 , GT" },
+                    { field: "city", type: "STRING", value: "Guatemala City" },
+                    { field: "state", type: "STRING", value: "Guatemala" },
+                    { field: "country", type: "STRING", value: "Guatemala" },
+                    { field: "postalCode", type: "STRING", value: "01011" },
+                    { field: "description", type: "STRING", value: "Near Miraflores" },
+                    { field: "latitude", type: "FLOAT", value: "14.5895" },
+                    { field: "longitude", type: "FLOAT", value: "-90.5518" }
+                ]
             },
-            {
-                publisherId: 1,         
-                type: 'LOCATION',
-                name: 'Restaurant - Big Panda',
-                description: 'Assian Food - 123 Main St, Anytown, USA',
-            },
-            {
-                publisherId: 2,
-                type: 'AUTO',
-                name: 'Honda Fit - 123-461',
-                description: 'Toyota Corolla - 123-456',                
-            },
-            {
-                publisherId: 3,
-                type: 'AUTO',
-                name: 'Shuttles',
-                description: 'Shutle to the airport - 123 Main St, Anytown, USA',                
+            devices: {
+                create: [
+                    {
+                        type: 'BILLBOARD',
+                        placement: 'LOCATION_OUTDOOR',
+                        make: 'byd',
+                        model: 'model 3',
+                        screenWidth: 3080,
+                        screenHeight: 1024,
+                        resolution: '3080x1024',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AAEFSDF99990',
+                        status: 'ACTIVE',
+
+                    },
+                    {
+                        type: 'BILLBOARD',
+                        placement: 'LOCATION_OUTDOOR',
+                        make: 'byd',
+                        model: 'model 8',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AAEFSDF99991',
+                        status: 'ACTIVE',
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'LOCATION_INDOOR',
+                        make: 'HuaWei',
+                        model: 'Mate Pad',
+                        screenWidth: 2560,
+                        screenHeight: 1440,
+                        resolution: '2560x1440',
+                        os: 'android',
+                        osVersion: '11',
+                        serialNumber: '1234567330',
+                        status: 'ACTIVE',
+
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'LOCATION_INDOOR',
+                        make: 'Samsung',
+                        model: 'Galaxy Tab',
+                        screenWidth: 1920,
+                        screenHeight: 1080,
+                        resolution: '1920x1080',
+                        os: 'android',
+                        osVersion: '10',
+                        serialNumber: '1234567331',
+                        status: 'ACTIVE',
+
+                    },
+                ]
             }
-        ]
-    })
+        },
+        {
+            publisherId: 1,
+            type: 'LOCATION',
+            name: 'Sake Sedeaki Z9',
+            description: 'Sake Bar Near Reforma Avenue',
+            assetDetails: {
+                create: [
+                    { field: "type", type: "STRING", value: "BAR" },
+                    { field: "name", type: "STRING", value: "SAKE SEDEAKI" },
+                    { field: "address", type: "STRING", value: "Reforma Ave, Zona 9 , GT" },
+                    { field: "city", type: "STRING", value: "Guatemala City" },
+                    { field: "state", type: "STRING", value: "Guatemala" },
+                    { field: "country", type: "STRING", value: "Guatemala" },
+                    { field: "postalCode", type: "STRING", value: "01009" },
+                    { field: "description", type: "STRING", value: "Sake Bar Near Reforma Avenue" },
+                    { field: "latitude", type: "FLOAT", value: "14.5895 " },
+                    { field: "longitude", type: "FLOAT", value: "-90.5518" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'BILLBOARD',
+                        placement: 'LOCATION_OUTDOOR',
+                        make: 'byd',
+                        model: 'model 3',
+                        screenWidth: 3080,
+                        screenHeight: 1024,
+                        resolution: '3080x1024',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AAEFSDF994290',
+                        status: 'ACTIVE',
+
+                    },
+                    {
+                        type: 'SMARTTV',
+                        placement: 'LOCATION_INDOOR',
+                        make: 'LG',
+                        model: 'UHD 4K',
+                        screenWidth: 2560,
+                        screenHeight: 1440,
+                        resolution: '2560x1440',
+                        os: 'androidtv',
+                        osVersion: '12',
+                        serialNumber: '3534567330',
+                        status: 'ACTIVE',
+
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'LOCATION_INDOOR',
+                        make: 'Samsung',
+                        model: 'Galaxy Tab',
+                        screenWidth: 1920,
+                        screenHeight: 1080,
+                        resolution: '1920x1080',
+                        os: 'android',
+                        osVersion: '10',
+                        serialNumber: '1234511267331',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 1,
+            type: 'LOCATION',
+            name: 'Galavista Las Americas',
+            description: 'Las Americas Galavista is a popular mall in the city',
+            assetDetails: {
+                create: [
+                    { field: "type", type: "STRING", value: "MALL" },
+                    { field: "name", type: "STRING", value: "Galavista Las Americas" },
+                    { field: "address", type: "STRING", value: "Las Americas Ave, Zona 14 , GT" },
+                    { field: "city", type: "STRING", value: "Guatemala City" },
+                    { field: "state", type: "STRING", value: "Guatemala" },
+                    { field: "country", type: "STRING", value: "Guatemala" },
+                    { field: "postalCode", type: "STRING", value: "01014" },
+                    { field: "description", type: "STRING", value: "Las Americas Galavista is a popular mall in the city" },
+                    { field: "latitude", type: "FLOAT", value: "14.5895" },
+                    { field: "longitude", type: "FLOAT", value: "-90.5518" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'BILLBOARD',
+                        placement: 'LOCATION_OUTDOOR',
+                        make: 'SENSIO',
+                        model: 'A',
+                        screenWidth: 3080,
+                        screenHeight: 1024,
+                        resolution: '3080x1024',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AAEKIDF99990',
+                        status: 'ACTIVE',
+                    },
+
+                ]
+            }
+        },
+        {
+            publisherId: 2,
+            type: 'LOCATION',
+            name: 'La Reforma Bus Stop',
+            description: 'La Reforma bus stop is a popular site in the city',
+            assetDetails: {
+                create: [
+                    { field: "type", type: "STRING", value: "BUS_STATION" },
+                    { field: "name", type: "STRING", value: "La Reforma Bus Stop" },
+                    { field: "address", type: "STRING", value: "Reforma Ave, Zona 9 , GT" },
+                    { field: "city", type: "STRING", value: "Guatemala City" },
+                    { field: "state", type: "STRING", value: "Guatemala" },
+                    { field: "country", type: "STRING", value: "Guatemala" },
+                    { field: "postalCode", type: "STRING", value: "01009" },
+                    { field: "description", type: "STRING", value: "La Reforma bus stop is a popular site in the city" },
+                    { field: "latitude", type: "FLOAT", value: "14.5895" },
+                    { field: "longitude", type: "FLOAT", value: "-90.5518" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'BILLBOARD',
+                        placement: 'LOCATION_OUTDOOR',
+                        make: 'byd',
+                        model: 'model 3',
+                        screenWidth: 1980,
+                        screenHeight: 1024,
+                        resolution: '1980x1024',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AAEFSDF99990',
+                        status: 'ACTIVE',
+
+                    }]
+            }
+        },
+        {
+            publisherId: 1,
+            type: 'LOCATION',
+            name: 'Roosevelt Bus Stop',
+            description: 'Roosevelt bus stop is a popular site in the city',
+            assetDetails: {
+                create: [
+                    { field: "type", type: "STRING", value: "BUS_STATION" },
+                    { field: "name", type: "STRING", value: "Roosevelt Bus Stop" },
+                    { field: "address", type: "STRING", value: "Roosevelt Ave, Zona 11 , GT" },
+                    { field: "city", type: "STRING", value: "Guatemala City" },
+                    { field: "state", type: "STRING", value: "Guatemala" },
+                    { field: "country", type: "STRING", value: "Guatemala" },
+                    { field: "postalCode", type: "STRING", value: "01011" },
+                    { field: "description", type: "STRING", value: "Roosevelt bus stop is a popular site in the city" },
+                    { field: "latitude", type: "FLOAT", value: "14.5895" },
+                    { field: "longitude", type: "FLOAT", value: "-90.5518" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'BILLBOARD',
+                        placement: 'LOCATION_OUTDOOR',
+                        make: 'SENSIO',
+                        model: 'M2',
+                        screenWidth: 3080,
+                        screenHeight: 1024,
+                        resolution: '3080x1024',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'LULI99990',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 2,
+            type: 'LOCATION',
+            name: 'Las Americas Bus Stop',
+            description: 'Las Americas bus stop is a popular site in the city',
+            assetDetails: {
+                create: [
+                    { field: "type", type: "STRING", value: "BUS_STATION" },
+                    { field: "name", type: "STRING", value: "Las Americas Bus Stop" },
+                    { field: "address", type: "STRING", value: "Las Americas Ave, Zona 14 , GT" },
+                    { field: "city", type: "STRING", value: "Guatemala City" },
+                    { field: "state", type: "STRING", value: "Guatemala" },
+                    { field: "country", type: "STRING", value: "Guatemala" },
+                    { field: "postalCode", type: "STRING", value: "01014" },
+                    { field: "description", type: "STRING", value: "Las Americas bus stop is a popular site in the city" },
+                    { field: "latitude", type: "FLOAT", value: "14.5895" },
+                    { field: "longitude", type: "FLOAT", value: "-90.5518" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'BILLBOARD',
+                        placement: 'LOCATION_OUTDOOR',
+                        make: 'ACER',
+                        model: 'A1',
+                        screenWidth: 800,
+                        screenHeight: 600,
+                        resolution: '800x600',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AALOLF99990',
+                        status: 'MAINTENANCE',
+
+                    }
+                ]
+            }
+        },
+        {
+            publisherId: 1,
+            type: 'VEHICLE',
+            name: 'Toyota Corolla LE 2021',
+            description: 'White Toyota Corolla LE 2021 with license plate 123-456 and vin 1234567890',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Toyota" },
+                    { field: "model", type: "STRING", value: "Corolla" },
+                    { field: "type", type: "STRING", value: "SEDAN" },
+                    { field: "trim", type: "STRING", value: "LE" },
+                    { field: "color", type: "STRING", value: "white" },
+                    { field: "year", type: "INT", value: "2021" },
+                    { field: "licensePlate", type: "STRING", value: "123-456" },
+                    { field: "vin", type: "STRING", value: "1234567890" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'byd',
+                        model: 'model 1',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: '1234567890',
+                        status: 'ACTIVE',
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'VEHICLE_INTERIOR',
+                        make: 'HuaWei',
+                        model: 'Mate Pad',
+                        screenWidth: 2560,
+                        screenHeight: 1440,
+                        resolution: '2560x1440',
+                        os: 'android',
+                        osVersion: '11',
+                        serialNumber: '9994567330',
+                        status: 'ACTIVE',
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 1,
+            type: 'VEHICLE',
+            name: 'Honda Civic LX 2009',
+            description: 'Black Honda Civic LX 2009 with license plate 123-457 and vin 1234567891',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Honda" },
+                    { field: "model", type: "STRING", value: "Civic" },
+                    { field: "type", type: "STRING", value: "SEDAN" },
+                    { field: "trim", type: "STRING", value: "LX" },
+                    { field: "color", type: "STRING", value: "black" },
+                    { field: "year", type: "INT", value: "2009" },
+                    { field: "licensePlate", type: "STRING", value: "123-457" },
+                    { field: "vin", type: "STRING", value: "1234567891" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'A7EF2LL23122',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 1,
+            type: 'VEHICLE',
+            name: 'Ford Fusion SE 2020',
+            description: 'Ford Fusion SE 2020 with license plate 123-458 and vin 1234567892',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Ford" },
+                    { field: "model", type: "STRING", value: "Fusion" },
+                    { field: "type", type: "STRING", value: "SUV" },
+                    { field: "trim", type: "STRING", value: "SE" },
+                    { field: "color", type: "STRING", value: "blue" },
+                    { field: "year", type: "INT", value: "2020" },
+                    { field: "licensePlate", type: "STRING", value: "123-458" },
+                    { field: "vin", type: "STRING", value: "1234567892" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AAEVRDF23122',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 1,
+            type: 'VEHICLE',
+            name: 'Chevrolet Malibu LT 2018',
+            description: 'Red Chevrolet Malibu LT 2018 with license plate 123-459 and vin 1234567893',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Chevrolet" },
+                    { field: "model", type: "STRING", value: "Malibu" },
+                    { field: "type", type: "STRING", value: "SEDAN" },
+                    { field: "trim", type: "STRING", value: "LT" },
+                    { field: "color", type: "STRING", value: "red" },
+                    { field: "year", type: "INT", value: "2018" },
+                    { field: "licensePlate", type: "STRING", value: "123-459" },
+                    { field: "vin", type: "STRING", value: "1234567893" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AAFQQ3122',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 2,
+            type: 'VEHICLE',
+            name: 'Nissan Altima S 2000',
+            description: 'Silver Nissan Altima S 2000 with license plate 123-460 and vin 1234567894',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Nissan" },
+                    { field: "model", type: "STRING", value: "Altima" },
+                    { field: "type", type: "STRING", value: "SEDAN" },
+                    { field: "trim", type: "STRING", value: "S" },
+                    { field: "color", type: "STRING", value: "silver" },
+                    { field: "year", type: "INT", value: "2000" },
+                    { field: "licensePlate", type: "STRING", value: "123-460" },
+                    { field: "vin", type: "STRING", value: "1234567894" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AAEFSDOPQ22',
+                        status: 'INACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 2,
+            type: 'VEHICLE',
+            name: 'Hyundai Sonata SE 2015',
+            description: 'Gray Hyundai Sonata SE 2015 with license plate 123-461 and vin 1234567895',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Hyundai" },
+                    { field: "model", type: "STRING", value: "Sonata" },
+                    { field: "type", type: "STRING", value: "SEDAN" },
+                    { field: "trim", type: "STRING", value: "SE" },
+                    { field: "color", type: "STRING", value: "gray" },
+                    { field: "year", type: "INT", value: "2015" },
+                    { field: "licensePlate", type: "STRING", value: "123-461" },
+                    { field: "vin", type: "STRING", value: "1234567895" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'ANOM827722',
+                        status: 'ACTIVE',
+
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'VEHICLE_INTERIOR',
+                        make: 'HuaWei',
+                        model: 'Mate Pad',
+                        screenWidth: 2560,
+                        screenHeight: 1440,
+                        resolution: '2560x1440',
+                        os: 'android',
+                        osVersion: '11',
+                        serialNumber: 'ANDRPIPK21',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 2,
+            type: 'VEHICLE',
+            name: 'Kia Sportage LX 2021',
+            description: 'White Kia Sportage LX 2021 with license plate 123-462 and vin 1234567896',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Kia" },
+                    { field: "model", type: "STRING", value: "Sportage" },
+                    { field: "type", type: "STRING", value: "SUV" },
+                    { field: "trim", type: "STRING", value: "LX" },
+                    { field: "color", type: "STRING", value: "white" },
+                    { field: "year", type: "INT", value: "2021" },
+                    { field: "licensePlate", type: "STRING", value: "123-462" },
+                    { field: "vin", type: "STRING", value: "1234567896" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'AKUY827722',
+                        status: 'ACTIVE',
+
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'VEHICLE_INTERIOR',
+                        make: 'HuaWei',
+                        model: 'Mate Pad',
+                        screenWidth: 2560,
+                        screenHeight: 1440,
+                        resolution: '2560x1440',
+                        os: 'android',
+                        osVersion: '11',
+                        serialNumber: 'ANDNITPK21',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 2,
+            type: 'VEHICLE',
+            name: 'Volkswagen Passat S 2021',
+            description: 'Black Volkswagen Passat S 2021 with license plate 123-463 and vin 1234567897',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Volkswagen" },
+                    { field: "model", type: "STRING", value: "Passat" },
+                    { field: "type", type: "STRING", value: "SEDAN" },
+                    { field: "trim", type: "STRING", value: "S" },
+                    { field: "color", type: "STRING", value: "black" },
+                    { field: "year", type: "INT", value: "2021" },
+                    { field: "licensePlate", type: "STRING", value: "123-463" },
+                    { field: "vin", type: "STRING", value: "1234567897" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'ANFGU722',
+                        status: 'ACTIVE',
+
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'VEHICLE_INTERIOR',
+                        make: 'HuaWei',
+                        model: 'Mate Pad',
+                        screenWidth: 2560,
+                        screenHeight: 1440,
+                        resolution: '2560x1440',
+                        os: 'android',
+                        osVersion: '11',
+                        serialNumber: 'ABRPPIPK21',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 3,
+            type: 'VEHICLE',
+            name: 'Subaru Legacy Base 2017',
+            description: 'Blue Subaru Legacy Base 2017 with license plate 123-464 and vin 1234567898',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Subaru" },
+                    { field: "model", type: "STRING", value: "Legacy" },
+                    { field: "type", type: "STRING", value: "SEDAN" },
+                    { field: "trim", type: "STRING", value: "Base" },
+                    { field: "color", type: "STRING", value: "blue" },
+                    { field: "year", type: "INT", value: "2017" },
+                    { field: "licensePlate", type: "STRING", value: "123-464" },
+                    { field: "vin", type: "STRING", value: "1234567898" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'ANOSTR27722',
+                        status: 'MAINTENANCE',
+
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'VEHICLE_INTERIOR',
+                        make: 'HuaWei',
+                        model: 'Mate Pad',
+                        screenWidth: 2560,
+                        screenHeight: 1440,
+                        resolution: '2560x1440',
+                        os: 'android',
+                        osVersion: '11',
+                        serialNumber: 'ASH897BPK21',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+        {
+            publisherId: 3,
+            type: 'VEHICLE',
+            name: 'Isuzu DMax Sport 2015',
+            description: 'Red Isuzu DMax Sport 2015 with license plate 123-465 and vin 1234567899',
+            assetDetails: {
+                create: [
+                    { field: "make", type: "STRING", value: "Isuzu" },
+                    { field: "model", type: "STRING", value: "DMax" },
+                    { field: "type", type: "STRING", value: "TRUCK" },
+                    { field: "trim", type: "STRING", value: "Sport" },
+                    { field: "color", type: "STRING", value: "red" },
+                    { field: "year", type: "INT", value: "2015" },
+                    { field: "licensePlate", type: "STRING", value: "123-465" },
+                    { field: "vin", type: "STRING", value: "1234567899" },
+                    { field: "numberOfSeats", type: "INT", value: "5" }
+                ]
+            },
+            devices: {
+                create: [
+                    {
+                        type: 'CARTOP',
+                        placement: 'VEHICLE_ROOF',
+                        make: 'TLS',
+                        model: 'MM2',
+                        screenWidth: 1080,
+                        screenHeight: 460,
+                        resolution: '1080x460',
+                        os: 'ubuntu',
+                        osVersion: '20.04',
+                        serialNumber: 'ANOMOPUS7722',
+                        status: 'ACTIVE',
+
+                    },
+                    {
+                        type: 'TABLET',
+                        placement: 'VEHICLE_INTERIOR',
+                        make: 'HuaWei',
+                        model: 'Mate Pad',
+                        screenWidth: 2560,
+                        screenHeight: 1440,
+                        resolution: '2560x1440',
+                        os: 'android',
+                        osVersion: '11',
+                        serialNumber: 'ANRTRE2TYIPK21',
+                        status: 'ACTIVE',
+
+                    },
+                ]
+            }
+        },
+
+    ]
+
+    const assets = [];
+    assetsArray.forEach(async asset => {
+        const newAsset = await prisma.asset.create({
+            data: asset
+        })
+        assets.push(newAsset);
+    });
+
+
 
     const drivers = await prisma.driver.createMany({
         data: [
             {
-                
-                vehicleId: 1,
                 firstName: 'John',
                 lastName: 'Doe',
                 email: 'his2@ksd.com',
@@ -458,8 +1191,6 @@ async function main() {
                 rideSharingCompany: 'Uber',
             },
             {
-                
-                vehicleId: 2,
                 firstName: 'Jane',
                 lastName: 'Doe',
                 email: 'jorsey@gmail.com',
@@ -477,8 +1208,7 @@ async function main() {
                 driversLicense: '1234567891',
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
-            }, {                
-                vehicleId: 3,
+            }, {
                 firstName: 'John',
                 lastName: 'Smith',
                 email: 'whyno@email.com',
@@ -497,8 +1227,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {                
-                vehicleId: 4,
+            {
                 firstName: 'Arturo',
                 lastName: 'Perez',
                 email: 'arpe@hotma.com',
@@ -517,8 +1246,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'InDriver',
             },
-            {                
-                vehicleId: 5,
+            {
                 firstName: 'Maria',
                 lastName: 'Garcia',
                 email: 'margar@alkd.com',
@@ -537,8 +1265,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'InDriver',
             },
-            {                
-                vehicleId: 6,
+            {
                 firstName: 'Juan',
                 lastName: 'Perez',
                 email: 'jape@juape.com',
@@ -557,8 +1284,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {                
-                vehicleId: 7,
+            {
                 firstName: 'Luca',
                 lastName: 'Alvarez',
                 email: 'alva@res.com',
@@ -578,8 +1304,6 @@ async function main() {
                 rideSharingCompany: 'Uber',
             },
             {
-
-                vehicleId: 8,
                 firstName: 'Sara',
                 lastName: 'Gomez',
                 email: 'sago@lll.com',
@@ -598,8 +1322,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {                
-                vehicleId: 9,
+            {
                 firstName: 'Luis',
                 lastName: 'Garcia',
                 email: 'luga@gaga.com',
@@ -618,8 +1341,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {                
-                vehicleId: 10,
+            {
                 firstName: 'Maria',
                 lastName: 'De Leon',
                 email: 'madele@on.com',
@@ -638,7 +1360,7 @@ async function main() {
                 driversLicenseURL: 'https://www.guatemala.com/drivers-license',
                 rideSharingCompany: 'Uber',
             },
-            {                
+            {
                 firstName: 'Alvaro',
                 lastName: 'Lopez',
                 email: 'allo@que.tal',
@@ -659,393 +1381,8 @@ async function main() {
             }
         ]
     })
-    
-    const vehicles = await prisma.vehicle.createMany({
-        data: [
-            {                
-                assetId: 1,
-                driverId: 1,
-                make: 'Toyota',
-                model: 'Corolla',
-                type: 'SEDAN',
-                trim: 'LE',
-                color: 'white',
-                year: 2021,
-                licensePlate: '123-456',
-                vin: '1234567890',
-                numberOfSeats: 5,
-            },
-            {              
-                assetId: 1,  
-                driverId: 2,
-                make: 'Honda',
-                model: 'Civic',
-                type: 'SEDAN',
-                trim: 'LX',
-                color: 'black',
-                year: 2009,
-                licensePlate: '123-457',
-                vin: '1234567891',
-                numberOfSeats: 5,
-            },
-            {              
-                assetId: 1,  
-                driverId: 3,
-                make: 'Ford',
-                model: 'Fusion',
-                type: 'SUV',
-                trim: 'SE',
-                color: 'blue',
-                year: 2020,
-                licensePlate: '123-458',
-                vin: '1234567892',
-                numberOfSeats: 5,
-            },
-            {   
-                assetId: 1,             
-                driverId: 4,
-                make: 'Chevrolet',
-                model: 'Malibu',
-                type: 'SEDAN',
-                trim: 'LT',
-                color: 'red',
-                year: 2018,
-                licensePlate: '123-459',
-                vin: '1234567893',
-                numberOfSeats: 5,
-            },
-            {              
-                assetId: 1,  
-                driverId: 5,
-                make: 'Nissan',
-                model: 'Altima',
-                type: 'SEDAN',
-                trim: 'S',
-                color: 'silver',
-                year: 2000,
-                licensePlate: '123-460',
-                vin: '1234567894',
-                numberOfSeats: 5,
-            },
-            {              
-                assetId: 3,  
-                driverId: 6,
-                make: 'Hyundai',
-                model: 'Sonata',
-                type: 'SEDAN',
-                trim: 'SE',
-                color: 'gray',
-                year: 2015,
-                licensePlate: '123-461',
-                vin: '1234567895',
-                numberOfSeats: 5,
-            },
-            {              
-                assetId: 1,  
-                driverId: 7,
-                make: 'Kia',
-                model: 'Sportage',
-                type: 'SUV',
-                trim: 'LX',
-                color: 'white',
-                year: 2021,
-                licensePlate: '123-462',
-                vin: '1234567896',
-                numberOfSeats: 5,
-            },
-            {              
-                assetId: 1,  
-                driverId: 8,
-                make: 'Volkswagen',
-                model: 'Passat',
-                type: 'SEDAN',
-                trim: 'S',
-                color: 'black',
-                year: 2021,
-                licensePlate: '123-463',
-                vin: '1234567897',
-                numberOfSeats: 5,
-            },
-            {              
-                assetId: 1,  
-                driverId: 9,
-                make: 'Subaru',
-                model: 'Legacy',
-                type: 'SEDAN',
-                trim: 'Base',
-                color: 'blue',
-                year: 2017,
-                licensePlate: '123-464',
-                vin: '1234567898',
-                numberOfSeats: 5,
-            },
-            {              
-                assetId: 1,  
-                driverId: 10,
-                make: 'Isuzu',
-                model: 'DMax',
-                type: 'TRUCK',
-                trim: 'Sport',
-                color: 'red',
-                year: 2015,
-                licensePlate: '123-465',
-                vin: '1234567899',
-                numberOfSeats: 5,
-            },
-        ]
-    })    
 
-    const locations = await prisma.location.createMany({
-        data: [
-            {
-                type: 'RESTAURANT',
-                name: 'Big Panda',
-                address: 'Roosevelt Ave, Zona 11 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01011',
-                description: 'Near Miraflores',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-            {
-                type: 'BAR',
-                name: 'SAKE SEDEAKI',
-                address: 'Reforma Ave, Zona 9 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01009',
-                description: 'Sake Bar Near Reforma Avenue',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-            {
-                type: 'MALL',
-                name: 'Galavista Las Americas',
-                address: 'Las Americas Ave, Zona 14 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01014',
-                description: 'Las Americas Galavista is a popular mall in the city',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-            {
-                type: 'BUS_STATION',
-                name: 'La Reforma Bus Stop',
-                address: 'Reforma Ave, Zona 9 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01009',
-                description: 'La Reforma bus stop is a popular site in the city',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-            {
-                type: 'BUS_STATION',
-                name: 'Roosevelt Bus Stop',
-                address: 'Roosevelt Ave, Zona 11 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01011',
-                description: 'Roosevelt bus stop is a popular site in the city',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-            {
-                type: 'BUS_STATION',
-                name: 'Las Americas Bus Stop',
-                address: 'Las Americas Ave, Zona 14 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01014',
-                description: 'Las Americas bus stop is a popular site in the city',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-            {
-                type: 'BUS_STATION',
-                name: 'La Reforma Bus Stop',
-                address: 'Reforma Ave, Zona 9 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01009',
-                description: 'La Reforma bus stop is a popular site in the city',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-            {
-                type: 'BUS_STATION',
-                name: 'Roosevelt Bus Stop',
-                address: 'Roosevelt Ave, Zona 11 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01011',
-                description: 'Roosevelt bus stop is a popular site in the city',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-            {
-                type: 'BUS_STATION',
-                name: 'Las Americas Bus Stop',
-                address: 'Las Americas Ave, Zona 14 , GT',
-                city: 'Guatemala City',
-                state: 'Guatemala',
-                country: 'Guatemala',
-                postalCode: '01014',
-                description: 'Las Americas bus stop is a popular site in the city',
-                latitude: 14.5895,
-                longitude: -90.5518,
-            },
-        ]
-    })
 
-    const assetLocations = await prisma.assetLocation.createMany({
-        data: [
-            {
-                assetId: 2,
-                locationId: 1,
-            },
-            {
-                assetId: 2,
-                locationId: 2,
-            },            
-        ]
-    })
-  
-    const devices = await prisma.device.createMany({
-        data: [
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 1',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: '1234567890',
-                
-            },
-            {
-                type: 'TABLET',
-                make: 'HuaWei',
-                model: 'Mate Pad',
-                screenWidth: 2560,
-                screenHeight: 1440,
-                resolution: '2560x1440',
-                os: 'android',
-                osVersion: '11',
-                serialNumber: '1234567330',
-                
-            },
-            {
-                type: 'TABLET',
-                make: 'Samsung',
-                model: 'Galaxy Tab',
-                screenWidth: 1920,
-                screenHeight: 1080,
-                resolution: '1920x1080',
-                os: 'android',
-                osVersion: '10',
-                serialNumber: '1234567331',
-                
-            },
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 2',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: '1223567891',
-                
-            },
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF23121',
-                
-            },
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF23122',
-                
-            },
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF23123',
-                
-            },
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF99989',
-                
-            },
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 3',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF99990',
-                
-            },
-            {
-                type: 'CARTOP',
-                make: 'byd',
-                model: 'model 8',
-                screenWidth: 1080,
-                screenHeight: 460,
-                resolution: '1080x460',
-                os: 'ubuntu',
-                osVersion: '20.04',
-                serialNumber: 'AAEFSDF99991',
-                
-            }
-        ]
-    })
-   
     const tags = await prisma.tag.createMany({
         data: [
             {
@@ -1144,7 +1481,7 @@ async function main() {
             },
             ]
 
-    })
+        })
 
     const Zones = await prisma.zone.createMany(
         {
@@ -1197,7 +1534,7 @@ async function main() {
                 type: 'GEO',
                 operation: 'IN',
                 value: '1',
-            },           
+            },
             {
                 campaignId: 1,
                 name: 'Autos',
@@ -1211,37 +1548,32 @@ async function main() {
                 type: 'VEHICLE',
                 operation: 'EQUALS',
                 value: 'SUV',
-            },      
+            },
             {
                 campaignId: 3,
                 name: 'Nights',
                 type: 'HOURS',
                 operation: 'BETWEEN',
                 value: '18:00, 23:59',
-            },      
+            },
         ]
     })
 
-    
+
 
 
     console.log(`Advertisers Seed -> ${JSON.stringify(advertisers)}`)
     console.log(`Campaigns Seed -> ${JSON.stringify(campaigns)}`)
     console.log(`Ads Seed -> ${JSON.stringify(ads)}`)
     console.log(`Publishers Seed -> ${JSON.stringify(publishers)}`)
-    console.log(`Assets Seed -> ${JSON.stringify(assets)}`)
-    console.log(`Vehicles Seed -> ${JSON.stringify(vehicles)}`)
-    console.log(`Assets Vehicles -> ${JSON.stringify(assetVehicles)}`)
+    console.log(`Assets Seed -> ${JSON.stringify(assets.length)}`)
     console.log(`Drivers Seed -> ${JSON.stringify(drivers)}`)
-    console.log(`Location Seed -> ${JSON.stringify(locations)}`)
-    console.log(`Assets Locations -> ${JSON.stringify(assetLocations)}`)
-    console.log(`Devices Seed -> ${JSON.stringify(devices)}`)
     console.log(`Tags Seed -> ${JSON.stringify(tags)}`)
     console.log(`Campaign Tags Seed -> ${JSON.stringify(campaignsTags)}`)
     console.log(`Polygon Seed -> ${JSON.stringify(polygons)}`)
     console.log(`Zones Seed -> ${JSON.stringify(Zones)}`)
-    console.log(`Polygon Zones Seed -> ${JSON.stringify(polygonZone)}`)    
-    console.log(`Filters Seed -> ${JSON.stringify(filters)}`)    
+    console.log(`Polygon Zones Seed -> ${JSON.stringify(polygonZone)}`)
+    console.log(`Filters Seed -> ${JSON.stringify(filters)}`)
 
 
 }

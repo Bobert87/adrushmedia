@@ -12,6 +12,11 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+generator erd {
+  provider = "prisma-erd-generator"
+  theme = "forest"
+  ignoreEnums = true
+}
 
 // Define the Driver table
 model Driver {
@@ -35,9 +40,7 @@ model Driver {
   rideSharingCompany String
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @default(now())
-  deletedAt          DateTime?
-  vehicleId          Int?
-  vehicle            Vehicle?
+  deletedAt          DateTime?    
   defaultGeoZoneId   Int?
 }
 
@@ -72,7 +75,7 @@ model Publisher {
 }
 
 enum AssetType {
-  AUTO
+  VEHICLE
   LOCATION
 }
 
@@ -111,13 +114,13 @@ model AssetDetail {
   deletedAt DateTime?
 }
 
-enum PlacementType {
+enum Placement {
   VEHICLE_ROOF
   VEHICLE_INTERIOR
   VEHICLE_SIDE
   VEHICLE_BACK
   LOCATION_OUTDOOR
-  LOCATION_INDOOR
+  LOCATION_INDOOR				
 }
 
 enum VehicleType {
@@ -130,25 +133,6 @@ enum VehicleType {
   PUBLIC_TRANSPORT
 }
 
-// Define the Car table
-model Vehicle {
-  id            Int         @id @default(autoincrement())
-  type          VehicleType
-  make          String
-  model         String
-  trim          String
-  color         String
-  year          Int
-  licensePlate  String
-  vin           String
-  numberOfSeats Int
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @default(now())
-  deletedAt     DateTime?
-  driverId      Int?        @unique
-  driver        Driver?     @relation(fields: [driverId], references: [id])
-  assetId       Int
-}
 
 enum LocationType {
   AIRPORT
@@ -194,6 +178,7 @@ model Device {
   id           Int        @id @default(autoincrement())
   type         DeviceType
   status       DeviceStatus
+  placement    Placement
   make         String
   model        String
   screenWidth  Int
@@ -389,7 +374,6 @@ model AdImpression {
   id          Int      @id
   scheduleId  Int
   adId        Int
-  coordinate  String
-  locationId  Float
+  coordinate  String  
   deliveredAt DateTime
 }
