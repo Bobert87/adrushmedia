@@ -88,7 +88,7 @@ model Asset {
   publisherId Int
   publisher   Publisher @relation(fields: [publisherId], references: [id])
   devices     Device[]
-  assetDetails AssetDetails[]
+  assetDetails AssetDetail[]
 }
 
 enum FieldType {
@@ -99,7 +99,7 @@ enum FieldType {
   DATE  
 }
 
-model AssetDetails {
+model AssetDetail {
   id        Int       @id @default(autoincrement())
   assetId   Int
   asset     Asset     @relation(fields: [assetId], references: [id])

@@ -409,27 +409,27 @@ async function main() {
         data:[
             {   
                 publisherId: 1,             
-                type: 'FLEET',
+                type: 'AUTO',
                 name: 'Fleet 1 - Blue Taxi Company',
-                description: '5 Toyota Corollas - 123-456, 123-457, 123-458, 123-459, 123-460',
+                description: 'Toyota Corollas - 123-456',
             },
             {
                 publisherId: 1,         
-                type: 'LOCATIONS',
+                type: 'LOCATION',
                 name: 'Restaurant - Big Panda',
                 description: 'Assian Food - 123 Main St, Anytown, USA',
             },
             {
                 publisherId: 2,
-                type: 'FLEET',
+                type: 'AUTO',
                 name: 'Honda Fit - 123-461',
                 description: 'Toyota Corolla - 123-456',                
             },
             {
                 publisherId: 3,
-                type: 'FLEET',
+                type: 'AUTO',
                 name: 'Shuttles',
-                description: 'Shutles to the airport - 123 Main St, Anytown, USA',                
+                description: 'Shutle to the airport - 123 Main St, Anytown, USA',                
             }
         ]
     })
@@ -793,44 +793,7 @@ async function main() {
                 numberOfSeats: 5,
             },
         ]
-    })
-
-    const assetVehicles = await prisma.assetVehicle.createMany({
-        data: [
-            {
-                assetId: 1,
-                vehicleId: 1,
-            },
-            {
-                assetId: 1,
-                vehicleId: 2,
-            },
-            {
-                assetId: 1,
-                vehicleId: 3,
-            },
-            {
-                assetId: 1,
-                vehicleId: 4,
-            },
-            {
-                assetId: 1,
-                vehicleId: 5,
-            },
-            {
-                assetId: 3,
-                vehicleId: 6,
-            },
-            {
-                assetId: 4,
-                vehicleId: 7,
-            },
-            {
-                assetId: 4,
-                vehicleId: 8,
-            },
-        ]
-    })
+    })    
 
     const locations = await prisma.location.createMany({
         data: [
