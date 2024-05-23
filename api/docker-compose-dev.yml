@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  adrush-api:
+    env_file:
+      - docker.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"        
+    container_name: 
+      adrush-api
+    command: ["npm","run","start:migrate:dev"]
+    depends_on:
+      - adrush-db
+
+  adrush-db:
+    image: postgres:latest
+    env_file:
+      - docker.env
+    ports:
+      - "5432"
+    container_name: 
+      adrush-db
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  adrush-df:
+    image: chainguard/dragonfly:latest
+    ports:
+      - "6379"
+    container_name:
+      adrush-df
+    volumes:
+      - dragonfly:/var/lib/dragonfly/data    
+
+volumes:
+    postgres:
+    dragonfly:
