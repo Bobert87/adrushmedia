@@ -6,7 +6,7 @@ services:
       - docker.env
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile          
     ports:
       - "3000:3000"        
     container_name: 
@@ -38,3 +38,4 @@ services:
 volumes:
     postgres:
     dragonfly:
+    
