@@ -34,7 +34,7 @@ class Polygon {
         }
     }
 
-    async getByPolygonGroupId(req, res) {
+    async getByZoneId(req, res) {
         try {
             const polygonGroupId = req.params.polygonGroupId;
             const polygons = await this.polygonModel.getByPolygonGroupId(polygonGroupId);
@@ -44,7 +44,7 @@ class Polygon {
         }
     }
 
-    async getByPolygonGroupName(req, res) {
+    async getByZoneName(req, res) {
         try {
             const polygonGroupName = req.params.name;
             const polygons = await this.polygonModel.getByPolygonGroupName(polygonGroupName);

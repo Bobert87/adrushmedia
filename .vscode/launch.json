@@ -6,7 +6,7 @@
     "configurations": [
 
         {
-            "command": "npm run debug",
+            "command": "npm run start:dev",
             "name": "Debug API",
             "request": "launch",
             "type": "node-terminal",

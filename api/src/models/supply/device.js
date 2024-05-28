@@ -6,12 +6,14 @@ class Device {
     let include = {}
     if (!includes) return include;
     if (includes.indexOf('assets') > -1)
-      include.assets = {include: {publisher: true}}
-    return include
+      include.asset = {include: {publisher: true}}
+    if (includes.indexOf('assetDetails') > -1)
+      include.asset = {include: {publisher: true, assetDetails: true}}
+    return { include: include}
   }
 
   async getAll(include) {
-    return db.device.findMany({
+    return db.device.findMany({      
       ...this.getIncludes(include)
     });
   }

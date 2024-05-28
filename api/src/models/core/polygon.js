@@ -17,18 +17,18 @@ class Polygon {
         });
     }
 
-    async getByPolygonGroupId(polygonGroupId) {
+    async getByZoneId(zoneId) {
         return db.polygon.findMany({
             where: {
-                polygonGroupPolygon: { some: { polygonGroupId: parseInt(polygonGroupId) } },
+                polygonGroupPolygon: { some: { zoneId: parseInt(zoneId) } },
             }
         });
     }
 
-    async  getByPolygonGroupName(polygonGroupName) {
+    async  getByZoneName(zoneName) {
         return db.polygon.findMany({
             where: {
-                polygonGroupPolygon: { some: { polygonGroup: { name: { contains: polygonGroupName, mode: 'insensitive' } } } },
+                polygonGroupPolygon: { some: { polygonZone: { name: { contains: zoneName, mode: 'insensitive' } } } },
             }
         });
     }

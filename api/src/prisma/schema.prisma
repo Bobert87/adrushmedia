@@ -12,9 +12,10 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 generator erd {
-  provider = "prisma-erd-generator"
-  theme = "forest"
+  provider    = "prisma-erd-generator"
+  theme       = "forest"
   ignoreEnums = true
 }
 
@@ -40,7 +41,7 @@ model Driver {
   rideSharingCompany String
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @default(now())
-  deletedAt          DateTime?    
+  deletedAt          DateTime?
   defaultGeoZoneId   Int?
 }
 
@@ -81,16 +82,16 @@ enum AssetType {
 
 // Define the Asset table
 model Asset {
-  id          Int       @id @default(autoincrement())
-  type        AssetType
-  name        String
-  description String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @default(now())
-  deletedAt   DateTime?
-  publisherId Int
-  publisher   Publisher @relation(fields: [publisherId], references: [id])
-  devices     Device[]
+  id           Int           @id @default(autoincrement())
+  type         AssetType
+  name         String
+  description  String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now())
+  deletedAt    DateTime?
+  publisherId  Int
+  publisher    Publisher     @relation(fields: [publisherId], references: [id])
+  devices      Device[]
   assetDetails AssetDetail[]
 }
 
@@ -99,7 +100,7 @@ enum FieldType {
   FLOAT
   INT
   BOOLEAN
-  DATE  
+  DATE
 }
 
 model AssetDetail {
@@ -120,7 +121,7 @@ enum Placement {
   VEHICLE_SIDE
   VEHICLE_BACK
   LOCATION_OUTDOOR
-  LOCATION_INDOOR				
+  LOCATION_INDOOR
 }
 
 enum VehicleType {
@@ -132,7 +133,6 @@ enum VehicleType {
   BUS
   PUBLIC_TRANSPORT
 }
-
 
 enum LocationType {
   AIRPORT
@@ -170,12 +170,12 @@ enum DeviceType {
 enum DeviceStatus {
   ACTIVE
   INACTIVE
-  MAINTENANCE  
+  MAINTENANCE
 }
 
 // Define the Device table
 model Device {
-  id           Int        @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   type         DeviceType
   status       DeviceStatus
   placement    Placement
@@ -188,9 +188,10 @@ model Device {
   osVersion    String
   serialNumber String
   assetId      Int
-  asset        Asset      @relation(fields: [assetId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @default(now())
+  asset        Asset        @relation(fields: [assetId], references: [id])
+  adimpressions AdImpression[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @default(now())
   deletedAt    DateTime?
 }
 
@@ -277,23 +278,24 @@ model Ad {
   deletedAt        DateTime?
   campaign         Campaign         @relation(fields: [campaignId], references: [id])
   scheduleDetails  ScheduleDetail[]
+  adImpressions    AdImpression[]
 }
 
 // Define the Polygon table
 model Polygon {
-  id                  Int            @id @default(autoincrement())
+  id                  Int           @id @default(autoincrement())
   name                String
   coordinates         Float[]
-  polygonGroupPolygon PolygonZone[]
+  polygonZone         PolygonZone[]
 }
 
 // Define the PolygonGroup table
 model Zone {
-  id        Int            @id @default(autoincrement())
+  id        Int           @id @default(autoincrement())
   name      String
   areas     PolygonZone[]
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @default(now())
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @default(now())
   deletedAt DateTime?
 }
 
@@ -302,7 +304,7 @@ model PolygonZone {
   polygonId Int
   zoneId    Int
   polygon   Polygon @relation(fields: [polygonId], references: [id])
-  zone      Zone    @relation(fields: [zoneId], references: [id])	
+  zone      Zone    @relation(fields: [zoneId], references: [id])
 }
 
 // Define the Tag table
@@ -365,13 +367,13 @@ model Schedule {
   deviceId        Int
   latitude        Float
   longitude       Float
-  h3Index         String
   scheduleDetails ScheduleDetail[]
+  adImpressions   AdImpression[]
 }
 
 // Define the ScheduleDetail table
 model ScheduleDetail {
-  id         Int      @id
+  id         Int      @id @default(autoincrement())
   scheduleId Int
   adId       Int
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
@@ -380,9 +382,15 @@ model ScheduleDetail {
 
 // Define the AdImpression table
 model AdImpression {
-  id          Int      @id
-  scheduleId  Int
-  adId        Int
-  coordinate  String  
-  deliveredAt DateTime
+  id           Int      @id @default(autoincrement())
+  scheduleId   Int
+  adId         Int
+  deviceId     Int  
+  latitude     Float
+  longitude    Float
+  amount       Decimal
+  createdAt    DateTime @default(now())
+  schedule     Schedule @relation(fields: [scheduleId], references: [id])
+  ad           Ad       @relation(fields: [adId], references: [id])
+  device       Device   @relation(fields: [deviceId], references: [id])
 }

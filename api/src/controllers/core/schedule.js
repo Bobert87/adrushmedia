@@ -1,64 +1,119 @@
 const scheduleModel = require('../../models/core/schedule');
 const campaignModel = require('../../models/demand/campaign');
+const deviceModel = require('../../models/supply/device');
+const polygonModel = require('../../models/core/polygon');
+const zoneModel = require('../../models/core/zone');
 const h3 = require('h3-js');
 
 class Schedule {
     constructor() {
         this.scheduleModel = new scheduleModel();
         this.campaignModel = new campaignModel();
+        this.deviceModel = new deviceModel();
+        this.polygonModel = new polygonModel();
+        this.zoneModel = new zoneModel();
     }
 
+    async getDevice(req) {
+        const deviceId = req.params.deviceId;
+        const device = await this.deviceModel.getById(deviceId, 'assetDetails');
+        let location = {};
+        if (device.asset.type === 'LOCATION') {
+            device.asset.assetDetails.forEach(assetDetail => {
+                if (assetDetail.field === 'longitude')
+                    location.lng = parseFloat(assetDetail.value);
+                if (assetDetail.field === 'latitude')
+                    location.lat = parseFloat(assetDetail.value);
+            });
+        }
+        else
+            location = { lat: parseFloat(req.params.lat), lng: parseFloat(req.params.lng) };
+        device.location = location
+        return device;
+    }
+
+    buildZones(campaigns) {
+        const zones = []
+        campaigns.forEach(campaign => {
+            campaign.filters.forEach(filter => {
+                if (filter.type === 'GEO') {
+                    zones.push({ campaignId: campaign.id, zoneId: filter.value, operation: filter.operation })
+                }
+            });
+        });
+        return zones;
+    }
+
+    filterZones(zones, device) {
+        const filteredZone = []
+        const deviceH3 = h3.latLngToCell(device.location.lat, device.location.lng, 8);
+        zones.forEach(zone => {
+            zone.areas.forEach(area => {
+                const zoneHex = h3.polygonToCells(area.polygon.coordinates, 8);
+                if (zoneHex.indexOf(deviceH3) > -1)
+                    filteredZone.push(zone);
+
+            })
+        });
+        return filteredZone;
+    }
+
+    formatAreas(zones) {
+        const formatedZones = JSON.parse(JSON.stringify(zones));
+        formatedZones.forEach(zone => {
+            zone.areas.forEach(area => {
+                const coordinates = area.polygon.coordinates
+                const formatedPolygon = []
+                for (let i = 0; i < coordinates.length; i = i + 2) {
+                    const element = [coordinates[i + 1], coordinates[i]];
+                    formatedPolygon.push(element);
+                }
+                area.polygon.coordinates = formatedPolygon;
+            });
+        });
+
+        return formatedZones;
+    }
+
+    async needsNewSchedule(device){
+        //discard creating  new schedule if the last was served less than x time ago.
+        const currentTime = new Date();
+        const lastSchedule = await this.scheduleModel.getScheduleByDeviceId(device.id);
+        const elapsedTimeInMins = (currentTime - lastSchedule) / 60000;
+        if (elapsedTimeInMins < 1) {
+            return false;
+        }
+        return true;
+    }
 
     async create(req, res) {
         try {
-            const deviceId = req.params.deviceId;
 
-            //discard creating a new schedule if the last was served less than x time ago.
-            const currentTime = new Date();
-            const lastSchedule = await this.scheduleModel.getScheduleByDeviceId(deviceId);
-            const elapsedTimeInMins = (currentTime - lastSchedule) / 60000;
-            if (elapsedTimeInMins < 1) {
+            // get device + location (static, it comes from asset, dyanmic, it comes from the request)
+            const device = await this.getDevice(req)
+
+            // check if the device is already scheduled
+            const needsNewSchedule = await this.needsNewSchedule(device);
+            if (!needsNewSchedule)
                 res.status(400).json({ error: "Device is already scheduled" });
-            }
 
             // Will only work with active campaings.
-            const activeCampaigns = await this.campaignModel.getByStatus('active', 'polygons');
+            const activeCampaigns = await this.campaignModel.getByStatus('ACTIVE', 'filters');
 
-            const polygonsToCheck = []
-            const memoization = {};
-            activeCampaigns.forEach(campaign => {
-                campaign.targets.forEach(target => {
-                    target.zone.areas.forEach(area => {
-                        if (polygonsToCheck[area.polygon.name]) return;
-                        const polygon = [];
-                        for (let i = 0; i < area.polygon.coordinates.length / 2; i++) {
-                            const coord = [parseFloat(area.polygon.coordinates[i * 2 + 1]) , parseFloat(area.polygon.coordinates[i * 2])];
-                            polygon.push(coord);
-                        }
-                        
-                        if (memoization[target.zone.name+"-"+area.polygon.name]) return;
-                        polygonsToCheck.push({                            
-                            target: target.zone.name,
-                            polygonName: area.polygon.name,
-                            polygon: polygon
-                        })
-                        memoization[target.zone.name+"-"+area.polygon.name] = true;
-                    })
-                });
-            });
+            // list all zones that appear on campaigns as filters
+            const zonesOnCampaignFilters = this.buildZones(activeCampaigns);
 
-            console.log(polygonsToCheck);
-            const onePoly = polygonsToCheck[0].polygon;
-            const onePoing = [14.5902676, -90.5201267];
-            console.log(onePoly);
-            const h3Cells = h3.polygonToCells(onePoly,8)            
-            const h3OnePointCell = h3.latLngToCell(onePoing[0],onePoing[1],8);
-            console.log(h3Cells);
-            console.log("H3 One Point Cell");
-            console.log(h3OnePointCell);            
-            
-            const deviceLocation = req.params.location;
-            res.json(h3Cells)
+            // a function from the model that gets all zones by id in single query.
+            const allZones = await this.zoneModel.getByIds(zonesOnCampaignFilters.map(g => parseInt(g.zoneId)), 'areas');
+
+            // same zones as below polygons are formated in [[x,y],[x,y]] format
+            const formatedZones = this.formatAreas(allZones);
+
+            // filter only the zones that are IN the device location
+            const zones = this.filterZones(formatedZones, device);
+
+            if (zones.length > 0)
+                res.json({ message: 'Campaigns were found' })
 
         } catch (error) {
             res.status(500).json({ error: error.message });

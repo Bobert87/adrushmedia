@@ -13,14 +13,14 @@ router.get('/:id', async (req, res) => {
     await polygon.getById(req, res)
 });
 
-router.get('/polygonGroup/:polygonGroupId', async (req, res) => {
+router.get('/zone/:zoneId', async (req, res) => {
     const polygon = new Polygon();
-    await polygon.getByPolygonGroupId(req, res)
+    await polygon.getByZoneId(req, res)
 });
 
-router.get('/polygonGroup/name/:name', async (req, res) => {
+router.get('/zone/name/:name', async (req, res) => {
     const polygon = new Polygon();
-    await polygon.getByPolygonGroupName(req, res)
+    await polygon.getByZoneName(req, res)
 });
 
 router.post('/', async (req, res) => {

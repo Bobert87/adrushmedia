@@ -260,14 +260,13 @@ CREATE TABLE "Schedule" (
     "deviceId" INTEGER NOT NULL,
     "latitude" DOUBLE PRECISION NOT NULL,
     "longitude" DOUBLE PRECISION NOT NULL,
-    "h3Index" TEXT NOT NULL,
 
     CONSTRAINT "Schedule_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "ScheduleDetail" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "scheduleId" INTEGER NOT NULL,
     "adId" INTEGER NOT NULL,
 
@@ -276,11 +275,14 @@ CREATE TABLE "ScheduleDetail" (
 
 -- CreateTable
 CREATE TABLE "AdImpression" (
-    "id" INTEGER NOT NULL,
+    "id" SERIAL NOT NULL,
     "scheduleId" INTEGER NOT NULL,
     "adId" INTEGER NOT NULL,
-    "coordinate" TEXT NOT NULL,
-    "deliveredAt" TIMESTAMP(3) NOT NULL,
+    "deviceId" INTEGER NOT NULL,
+    "latitude" DOUBLE PRECISION NOT NULL,
+    "longitude" DOUBLE PRECISION NOT NULL,
+    "amount" DECIMAL(65,30) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "AdImpression_pkey" PRIMARY KEY ("id")
 );
@@ -320,3 +322,12 @@ ALTER TABLE "ScheduleDetail" ADD CONSTRAINT "ScheduleDetail_scheduleId_fkey" FOR
 
 -- AddForeignKey
 ALTER TABLE "ScheduleDetail" ADD CONSTRAINT "ScheduleDetail_adId_fkey" FOREIGN KEY ("adId") REFERENCES "Ad"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AdImpression" ADD CONSTRAINT "AdImpression_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "Schedule"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AdImpression" ADD CONSTRAINT "AdImpression_adId_fkey" FOREIGN KEY ("adId") REFERENCES "Ad"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AdImpression" ADD CONSTRAINT "AdImpression_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "Device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

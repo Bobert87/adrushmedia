@@ -8,7 +8,7 @@ class Zone {
         const parsedincludes = includes.split(',')
         if (parsedincludes.indexOf('areas') > -1)
             include.areas = {include: {polygon: true}}
-        return {include}
+        return {include: include}
     }
     async getAll(include) {        
         return db.zone.findMany({
@@ -19,6 +19,13 @@ class Zone {
     async getById(id,include) {
         return db.zone.findUnique({
             where: { id: parseInt(id) },
+            ...this.getIncludes(include)    
+        });
+    }
+
+    async getByIds(ids,include) {
+        return db.zone.findMany({
+            where: { id: { in: ids } },
             ...this.getIncludes(include)    
         });
     }
