@@ -268,10 +268,11 @@ model Ad {
   id               Int              @id @default(autoincrement())
   campaignId       Int
   name             String
-  targetDeviceType String
+  targetDeviceType DeviceType
   creativeFormat   String
   creativeURL      String
   landingURL       String
+  duration         Float            @default(10)
   status           AdStatus
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @default(now())
