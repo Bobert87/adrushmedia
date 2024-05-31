@@ -1,24 +1,32 @@
 const db = require('../db').client;
 
 class Schedule {
-    async create(schedule, scheduleDetails) {
+    async create(device, scheduleDetails) {
         return db.schedule.create({
             data: {
-                ...schedule,
+                deviceId: device.id,
+                latitude: device.location.lat,
+                longitude: device.location.lng,
                 scheduleDetails: {
-                    create: [
-                        ...scheduleDetails
-                    ]
-                }
+                    createMany: {
+                        data: scheduleDetails.map(scheduleDetail => {return {adId:scheduleDetail}})
+                    }
+                }                
             },
+            include: {
+                scheduleDetails: {
+                    include: {
+                        ad: true
+                    }
+                }
+            }
         });        
     }
 
     async getScheduleByDeviceId(deviceId) {
-        return db.schedule.findMany({
+        return db.schedule.findFirst({            
             where: { deviceId: parseInt(deviceId)},
             orderBy: {createdAt: 'desc'},
-            take: 1,
             include: {
                 scheduleDetails: true
             }

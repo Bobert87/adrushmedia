@@ -175,24 +175,24 @@ enum DeviceStatus {
 
 // Define the Device table
 model Device {
-  id           Int          @id @default(autoincrement())
-  type         DeviceType
-  status       DeviceStatus
-  placement    Placement
-  make         String
-  model        String
-  screenWidth  Int
-  screenHeight Int
-  resolution   String
-  os           String
-  osVersion    String
-  serialNumber String
-  assetId      Int
-  asset        Asset        @relation(fields: [assetId], references: [id])
+  id            Int            @id @default(autoincrement())
+  type          DeviceType
+  status        DeviceStatus
+  placement     Placement
+  make          String
+  model         String
+  screenWidth   Int
+  screenHeight  Int
+  resolution    String
+  os            String
+  osVersion     String
+  serialNumber  String
+  assetId       Int
+  asset         Asset          @relation(fields: [assetId], references: [id])
   adimpressions AdImpression[]
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @default(now())
-  deletedAt    DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now())
+  deletedAt     DateTime?
 }
 
 enum AdvertiserType {
@@ -272,7 +272,7 @@ model Ad {
   creativeFormat   String
   creativeURL      String
   landingURL       String
-  duration         Float            @default(10)
+  duration         Int              @default(10000)
   status           AdStatus
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @default(now())
@@ -284,10 +284,10 @@ model Ad {
 
 // Define the Polygon table
 model Polygon {
-  id                  Int           @id @default(autoincrement())
-  name                String
-  coordinates         Float[]
-  polygonZone         PolygonZone[]
+  id          Int           @id @default(autoincrement())
+  name        String
+  coordinates Float[]
+  polygonZone PolygonZone[]
 }
 
 // Define the PolygonGroup table
@@ -364,7 +364,7 @@ model Filter {
 model Schedule {
   id              Int              @id @default(autoincrement())
   createdAt       DateTime         @default(now())
-  deliveredAt     DateTime
+  deliveredAt     DateTime         @default(now())
   deviceId        Int
   latitude        Float
   longitude       Float
@@ -383,15 +383,15 @@ model ScheduleDetail {
 
 // Define the AdImpression table
 model AdImpression {
-  id           Int      @id @default(autoincrement())
-  scheduleId   Int
-  adId         Int
-  deviceId     Int  
-  latitude     Float
-  longitude    Float
-  amount       Decimal
-  createdAt    DateTime @default(now())
-  schedule     Schedule @relation(fields: [scheduleId], references: [id])
-  ad           Ad       @relation(fields: [adId], references: [id])
-  device       Device   @relation(fields: [deviceId], references: [id])
+  id         Int      @id @default(autoincrement())
+  scheduleId Int
+  adId       Int
+  deviceId   Int
+  latitude   Float
+  longitude  Float
+  amount     Decimal
+  createdAt  DateTime @default(now())
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  ad         Ad       @relation(fields: [adId], references: [id])
+  device     Device   @relation(fields: [deviceId], references: [id])
 }

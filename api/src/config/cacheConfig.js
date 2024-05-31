@@ -11,19 +11,12 @@ const redis = new Redis({
 
 const cacheMiddleware = createPrismaRedisCache({
   models: [
-    { model: "Advertiser", cacheTime: 3600 },    
+    { model: "Advertiser", cacheTime: 3600 },
+    { model: "Schedule", excludeMethods:["findFirst"]}
   ],
   storage: { type: "redis", options: { client:redis, invalidation: true} },
-  cacheTime: 3600,
-  onHit: (key) => {
-    console.log("cache hit");
-  },
-  onMiss: (key) => {
-    console.log("cache miss");
-  },
-  onError: (key) => {
-    console.log("cache error");
-  },
+  excludeMethods: ["findFirst"],
+  cacheTime: 3600,  
 });
 
 module.exports = cacheMiddleware;

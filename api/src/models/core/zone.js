@@ -1,7 +1,6 @@
 const db = require('../db').client;
 
 class Zone {
-
     getIncludes(includes){
         let include = {}
         if (!includes) return includes;

@@ -4,7 +4,9 @@ const deviceModel = require('../../models/supply/device');
 const polygonModel = require('../../models/core/polygon');
 const zoneModel = require('../../models/core/zone');
 const adModel = require('../../models/demand/ad');
+const getHitMap = require('../../utils/h3Cache');
 const h3 = require('h3-js');
+const MAXSCHEDULETIME = 60000;
 
 class Schedule {
     constructor() {
@@ -89,8 +91,11 @@ class Schedule {
         //discard creating  new schedule if the last was served less than x time ago.
         const currentTime = new Date();
         const lastSchedule = await this.scheduleModel.getScheduleByDeviceId(device.id);
-        const elapsedTimeInMins = (currentTime - lastSchedule) / 60000;
-        if (elapsedTimeInMins < 1) {
+        const lastScheduleTime = new Date(lastSchedule.createdAt);
+
+        console.log(currentTime - lastScheduleTime, '----->', lastSchedule);
+        const elapsedTimeInMiliseconds = (currentTime - lastScheduleTime);
+        if (elapsedTimeInMiliseconds < 60000) {
             return false;
         }
         return true;
@@ -136,33 +141,15 @@ class Schedule {
         return campaigns;
     }
 
-    async create(req, res) {
-        try {
-
-            // get device + location (static, it comes from asset, dyanmic, it comes from the request)
-            const device = await this.getDevice(req)
-
-            // check if the device is already scheduled
-            const needsNewSchedule = await this.needsNewSchedule(device);
-            if (!needsNewSchedule)
-                res.status(400).json({ error: "Device is already scheduled" });
-
-            // Will only work with active campaings.
-            const activeCampaigns = await this.campaignModel.getByStatus('ACTIVE', 'filters,ads');
-
-            // This constructs a dictionary with the campaign and the zone that has a geo filter
-            const campaignZoneDictionary = this.getCampaignZoneDictionary(activeCampaigns)            
-
-            const geoFilteredCampaigns = await this.deviceInZone(device,campaignZoneDictionary);
-            
-            const ads = [];
-            for (const campaignId in geoFilteredCampaigns) {
-                const campaign = geoFilteredCampaigns[campaignId];
-                campaign.ads.forEach(ad => {
+    fitAdsInTimeFrame(campaigns,device){
+        const ads = [];
+            for (const campaignId in campaigns) {
+                const currentCampaign = campaigns[campaignId];
+                currentCampaign.ads.forEach(ad => {
                     if (ad.status !== 'ACTIVE')
                         return;                    
-                    const maxBid = campaign.maxBid;
-                    const newAd = {...ad, revenue: maxBid * ad.duration/60};
+                    const maxBid = currentCampaign.maxBid;
+                    const newAd = {...ad, revenue: maxBid * ad.duration/60000};
                     if (newAd.targetDeviceType === device.type)
                         ads.push(newAd);
                 });
@@ -170,20 +157,46 @@ class Schedule {
 
             ads.sort((a, b) => b.revenue - a.revenue);
 
-        
+            let totalDuration = ads.reduce((acc, ad) => acc + ad.duration, 0);
+            while(totalDuration > MAXSCHEDULETIME){
+                totalDuration -= ads.pop().duration;                
+            }            
+            return ads;
+    }
 
-            // activeCampaigns.filter(campaign => {
-            //     filters.forEach(zone => {
-            //         if (campaign.id === zone.campaignId) {
-            //             // create a schedule for the device
-            //             this.scheduleModel.create(device.id, campaign.id, zone.id);
-            //         }
-            //     });
+    async create(req, res) {
+        try {
+
+
+            // Get device + location (static, it comes from asset, dyanmic, it comes from the request)
+            const device = await this.getDevice(req)
+
+            // Get h3 map from all zones using cache
+            const h3Map = await getHitMap(device.location);            
+
+            // Check if the device is already scheduled
+            const needsNewSchedule = await this.needsNewSchedule(device);
+            if (!needsNewSchedule){
+                res.status(425).json({ error: 'Device is already scheduled' });
+                return;
+            }                
             
-            // })
+            // Get active campaigns with geo filters            
+            const activeCampaigns = await this.campaignModel.getByGeoFilterZones(Object.keys(h3Map), 'filters,ads');
 
-            if (ads)
-                res.json({ ads})
+            // This constructs a dictionary with the campaign and the zone that has a geo filter
+            const campaignZoneDictionary = this.getCampaignZoneDictionary(activeCampaigns)            
+
+            // Returns the campaigns that have a zone that the device is in
+            const geoFilteredCampaigns = await this.deviceInZone(device,campaignZoneDictionary);
+            
+            // Get the ads that fit in the time frame
+            const ads = this.fitAdsInTimeFrame(geoFilteredCampaigns,device);            
+
+            // Create a schedule for the device
+            const createdSchedule = await this.scheduleModel.create(device, ads.map(ad => ad.id));                        
+            
+            res.json(createdSchedule)
 
         } catch (error) {
             res.status(500).json({ error: error.message });

@@ -6,7 +6,7 @@ class Campaign {
     let include = {}
     if (!includes) return includes;
     const parsedincludes = includes.split(',')
-    if (parsedincludes.indexOf('tags') > -1)      
+    if (parsedincludes.indexOf('tags') > -1)
       include.tags = { select: { tag: true } }
     if (parsedincludes.indexOf('ads') > -1)
       include.ads = true
@@ -18,25 +18,25 @@ class Campaign {
   }
   async getAll(include) {
     return db.campaign.findMany({
-      ...this.getIncludes(include),      
+      ...this.getIncludes(include),
     });
   }
 
-  async getById(id,include) {    
+  async getById(id, include) {
     return db.campaign.findUnique({
       where: { id: parseInt(id) },
       ...this.getIncludes(include)
     });
   }
 
-  async getByAdvertiserId(advertiserId,include) {
+  async getByAdvertiserId(advertiserId, include) {
     return db.campaign.findMany({
       where: { advertiserId: parseInt(advertiserId) },
       ...this.getIncludes(include)
     });
   }
 
-  async getByTagName(tagName,include) {
+  async getByTagName(tagName, include) {
     return db.campaign.findMany({
       where: {
         tags: { some: { tag: { name: { contains: tagName, mode: "insensitive" } } } },
@@ -45,10 +45,30 @@ class Campaign {
     });
   }
 
-  async getByStatus(status,include) {
+  async getByStatus(status, include) {
     return db.campaign.findMany({
       where: { status },
       ...this.getIncludes(include)
+    });
+  }
+
+  async getByGeoFilterZones(zoneIds, include) {
+    return db.campaign.findMany({
+      select: {
+        id: true,
+        ads: true,
+        status: 'ACTIVE',
+        maxBid: true,
+        filters: {
+          where: {
+            type: "GEO",
+            operation: "IN",
+            value: { in: zoneIds },
+          },
+
+        },
+        
+      }
     });
   }
 
