@@ -1,43 +1,41 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const scheduledTasks = require("./scheduled/scheduler");
+const express = require("express");
+const cookieParser = require("cookie-parser");
 
-var advertiserRouter = require('./routes/demand/advertiser');
-var campaignRouter = require('./routes/demand/campaign');
-var adRouter = require('./routes/demand/ad');
+const advertiserRouter = require("./routes/demand/advertiser");
+const campaignRouter = require("./routes/demand/campaign");
+const adRouter = require("./routes/demand/ad");
 
-var deviceRouter = require('./routes/supply/device');
-var assetRouter = require('./routes/supply/asset');
+const deviceRouter = require("./routes/supply/device");
+const assetRouter = require("./routes/supply/asset");
 
-var tagRouter = require('./routes/core/tag');
-var polygonRouter = require('./routes/core/polygon');
-var scheduleRouter = require('./routes/core/schedule');
-var zoneRouter = require('./routes/core/zone');
+const tagRouter = require("./routes/core/tag");
+const polygonRouter = require("./routes/core/polygon");
+const scheduleRouter = require("./routes/core/schedule");
+const zoneRouter = require("./routes/core/zone");
 
-const loggerColorConfig = require('./config/loggerConfig');
+const { logger, webLogger } = require("./utils/loggers");
 
-var app = express();
+const app = express();
 
-app.use(logger(loggerColorConfig));
+app.use(webLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-const t = path.join(__dirname, 'public');
-app.use(express.static(t));
 
-app.use('/advertiser', advertiserRouter);
-app.use('/campaign', campaignRouter);
-app.use('/ad', adRouter);
+logger.info("Starting API Server");
+logger.info(`${scheduledTasks.length} scheduled tasks running`);
+app.use("/advertiser", advertiserRouter);
+app.use("/campaign", campaignRouter);
+app.use("/ad", adRouter);
 
-app.use('/device', deviceRouter);
-app.use('/asset', assetRouter);
+app.use("/device", deviceRouter);
+app.use("/asset", assetRouter);
 
-app.use('/tag', tagRouter);
-app.use('/polygon', polygonRouter);
-app.use('/zone', zoneRouter);
+app.use("/tag", tagRouter);
+app.use("/polygon", polygonRouter);
+app.use("/zone", zoneRouter);
 
-app.use('/schedule', scheduleRouter);
-
+app.use("/schedule", scheduleRouter);
 
 module.exports = app;

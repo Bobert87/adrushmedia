@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'SUSPENDED', 'MAXED_OUT', 'DELETED');
+CREATE TYPE "AccountStatus" AS ENUM ('ACTIVE', 'PAUSED', 'OVERDUE', 'DELETED');
 
 -- CreateEnum
 CREATE TYPE "AssetType" AS ENUM ('VEHICLE', 'LOCATION');
@@ -26,10 +26,10 @@ CREATE TYPE "DeviceStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'MAINTENANCE');
 CREATE TYPE "AdvertiserType" AS ENUM ('AGENCY', 'BRAND', 'INDIVIDUAL');
 
 -- CreateEnum
-CREATE TYPE "Term" AS ENUM ('NET_30', 'NET_60', 'NET_90', 'PREPAID');
+CREATE TYPE "Term" AS ENUM ('NET_15', 'NET_30', 'NET_60', 'NET_90', 'PREPAID');
 
 -- CreateEnum
-CREATE TYPE "CampaignStatus" AS ENUM ('DRAFT', 'PENDING', 'ACTIVE', 'PAUSED', 'COMPLETED', 'CANCELLED');
+CREATE TYPE "CampaignStatus" AS ENUM ('DRAFT', 'PENDING', 'ACTIVE', 'PAUSED', 'ADVERTISER_PAUSED', 'MAXED_OUT_DAY', 'MAXED_OUT_MONTH', 'COMPLETED', 'CANCELLED');
 
 -- CreateEnum
 CREATE TYPE "AdStatus" AS ENUM ('DRAFT', 'PENDING', 'ACTIVE', 'PAUSED', 'COMPLETED', 'CANCELLED');
@@ -39,6 +39,9 @@ CREATE TYPE "FilterType" AS ENUM ('GEO', 'DEVICE', 'VEHICLE', 'HOURS', 'DAYS', '
 
 -- CreateEnum
 CREATE TYPE "FilterOperations" AS ENUM ('EQUALS', 'NOT_EQUALS', 'GREATER_THAN', 'LESS_THAN', 'GREATER_THAN_OR_EQUAL', 'LESS_THAN_OR_EQUAL', 'BETWEEN', 'NOT_BETWEEN', 'IN', 'NOT_IN', 'LIKE', 'NOT_LIKE', 'IS_NULL', 'IS_NOT_NULL');
+
+-- CreateEnum
+CREATE TYPE "InvoiceStatus" AS ENUM ('SENT', 'PAID', 'OVERDUE', 'CANCELLED');
 
 -- CreateTable
 CREATE TABLE "Driver" (
@@ -149,8 +152,11 @@ CREATE TABLE "Advertiser" (
     "email" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "address" TEXT NOT NULL,
+    "taxNumber" TEXT NOT NULL,
     "term" "Term" NOT NULL,
     "status" "AccountStatus" NOT NULL,
+    "lastStatus" "AccountStatus",
+    "maxTermCredit" DECIMAL(65,30) NOT NULL,
     "timezone" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -166,8 +172,10 @@ CREATE TABLE "Campaign" (
     "name" TEXT NOT NULL,
     "brand" TEXT NOT NULL,
     "maxBid" DOUBLE PRECISION NOT NULL,
-    "budget" DECIMAL(65,30) NOT NULL,
+    "dailyBudget" DECIMAL(65,30),
+    "monthlyBudget" DECIMAL(65,30),
     "status" "CampaignStatus" NOT NULL,
+    "lastStatus" "CampaignStatus",
     "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3),
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -277,6 +285,8 @@ CREATE TABLE "ScheduleDetail" (
 -- CreateTable
 CREATE TABLE "AdImpression" (
     "id" SERIAL NOT NULL,
+    "advertiserId" INTEGER NOT NULL,
+    "campaignId" INTEGER NOT NULL,
     "scheduleId" INTEGER NOT NULL,
     "adId" INTEGER NOT NULL,
     "deviceId" INTEGER NOT NULL,
@@ -286,6 +296,35 @@ CREATE TABLE "AdImpression" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "AdImpression_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Invoice" (
+    "id" SERIAL NOT NULL,
+    "advertiserId" INTEGER NOT NULL,
+    "dueDate" TIMESTAMP(3) NOT NULL,
+    "paidAt" TIMESTAMP(3),
+    "amount" DECIMAL(65,30) NOT NULL,
+    "taxes" DECIMAL(65,30) NOT NULL,
+    "status" "InvoiceStatus" NOT NULL DEFAULT 'SENT',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "deletedAt" TIMESTAMP(3),
+
+    CONSTRAINT "Invoice_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "lineItem" (
+    "id" SERIAL NOT NULL,
+    "invoiceId" INTEGER NOT NULL,
+    "description" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "unitPrice" DECIMAL(65,30) NOT NULL,
+    "total" DECIMAL(65,30) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "lineItem_pkey" PRIMARY KEY ("id")
 );
 
 -- AddForeignKey
@@ -331,4 +370,16 @@ ALTER TABLE "AdImpression" ADD CONSTRAINT "AdImpression_scheduleId_fkey" FOREIGN
 ALTER TABLE "AdImpression" ADD CONSTRAINT "AdImpression_adId_fkey" FOREIGN KEY ("adId") REFERENCES "Ad"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "AdImpression" ADD CONSTRAINT "AdImpression_advertiserId_fkey" FOREIGN KEY ("advertiserId") REFERENCES "Advertiser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "AdImpression" ADD CONSTRAINT "AdImpression_campaignId_fkey" FOREIGN KEY ("campaignId") REFERENCES "Campaign"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "AdImpression" ADD CONSTRAINT "AdImpression_deviceId_fkey" FOREIGN KEY ("deviceId") REFERENCES "Device"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Invoice" ADD CONSTRAINT "Invoice_advertiserId_fkey" FOREIGN KEY ("advertiserId") REFERENCES "Advertiser"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "lineItem" ADD CONSTRAINT "lineItem_invoiceId_fkey" FOREIGN KEY ("invoiceId") REFERENCES "Invoice"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

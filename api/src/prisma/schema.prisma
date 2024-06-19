@@ -13,11 +13,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-generator erd {
-  provider    = "prisma-erd-generator"
-  theme       = "forest"
-  ignoreEnums = true
-}
+// generator erd {
+//   provider    = "prisma-erd-generator"
+//   theme       = "forest"
+//   ignoreEnums = false
+// }
 
 // Define the Driver table
 model Driver {
@@ -46,10 +46,9 @@ model Driver {
 }
 
 enum AccountStatus {
-  ACTIVE
-  INACTIVE
-  SUSPENDED
-  MAXED_OUT
+  ACTIVE // USER
+  PAUSED // USER
+  OVERDUE // SYSTEM  
   DELETED
 }
 
@@ -202,6 +201,7 @@ enum AdvertiserType {
 }
 
 enum Term {
+  NET_15  
   NET_30
   NET_60
   NET_90
@@ -210,19 +210,24 @@ enum Term {
 
 // Define the Advertiser table
 model Advertiser {
-  id        Int            @id @default(autoincrement())
-  name      String
-  type      AdvertiserType
-  email     String
-  phone     String
-  address   String
-  term      Term // net 30, net 60, net 90, prepaid
-  status    AccountStatus
-  timezone  String?
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @default(now())
-  deletedAt DateTime?
-  campaigns Campaign[]
+  id            Int            @id @default(autoincrement())
+  name          String
+  type          AdvertiserType
+  email         String
+  phone         String
+  address       String
+  taxNumber     String
+  term          Term // net 30, net 60, net 90, prepaid
+  status        AccountStatus
+  lastStatus    AccountStatus?
+  maxTermCredit Decimal
+  timezone      String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now())
+  deletedAt     DateTime?
+  campaigns     Campaign[]
+  invoices      Invoice[]
+  adImpressions   AdImpression[]
 }
 
 enum CampaignStatus {
@@ -230,6 +235,9 @@ enum CampaignStatus {
   PENDING
   ACTIVE
   PAUSED
+  ADVERTISER_PAUSED
+  MAXED_OUT_DAY
+  MAXED_OUT_MONTH
   COMPLETED
   CANCELLED
 }
@@ -245,22 +253,25 @@ enum AdStatus {
 
 // Define the Campaign table
 model Campaign {
-  id           Int            @id @default(autoincrement())
-  advertiserId Int
-  name         String
-  brand        String
-  maxBid       Float
-  budget       Decimal
-  status       CampaignStatus
-  startDate    DateTime
-  endDate      DateTime?
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @default(now())
-  deletedAt    DateTime?
-  advertiser   Advertiser     @relation(fields: [advertiserId], references: [id])
-  ads          Ad[]
-  tags         CampaignTag[]
-  filters      Filter[]
+  id            Int            @id @default(autoincrement())
+  advertiserId  Int
+  name          String
+  brand         String
+  maxBid        Float
+  dailyBudget   Decimal?
+  monthlyBudget Decimal?
+  status        CampaignStatus
+  lastStatus    CampaignStatus?
+  startDate     DateTime
+  endDate       DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now())
+  deletedAt     DateTime?
+  advertiser    Advertiser     @relation(fields: [advertiserId], references: [id])
+  ads           Ad[]
+  tags          CampaignTag[]
+  filters       Filter[]
+  adImpressions AdImpression[]
 }
 
 // Define the Ad table
@@ -384,6 +395,8 @@ model ScheduleDetail {
 // Define the AdImpression table
 model AdImpression {
   id         Int      @id @default(autoincrement())
+  advertiserId Int
+  campaignId Int
   scheduleId Int
   adId       Int
   deviceId   Int
@@ -391,7 +404,42 @@ model AdImpression {
   longitude  Float
   amount     Decimal
   createdAt  DateTime @default(now())
-  schedule   Schedule @relation(fields: [scheduleId], references: [id])
+  schedule   Schedule @relation(fields: [scheduleId], references: [id])  
   ad         Ad       @relation(fields: [adId], references: [id])
+  advertiser Advertiser @relation(fields: [advertiserId], references: [id])
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
   device     Device   @relation(fields: [deviceId], references: [id])
+}
+
+model Invoice {
+  id           Int           @id @default(autoincrement())  
+  advertiserId Int
+  advertiser   Advertiser    @relation(fields: [advertiserId], references: [id])
+  dueDate      DateTime
+  paidAt       DateTime?
+  amount       Decimal
+  taxes        Decimal
+  status       InvoiceStatus @default(SENT)
+  lineItems    lineItem[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @default(now())
+  deletedAt    DateTime?
+}
+
+model lineItem{
+  id Int @id @default(autoincrement())
+  invoiceId Int
+  invoice Invoice @relation(fields: [invoiceId], references: [id])
+  description String
+  quantity Int
+  unitPrice Decimal
+  total Decimal
+  createdAt DateTime @default(now())
+}
+
+enum InvoiceStatus {
+  SENT
+  PAID
+  OVERDUE
+  CANCELLED
 }
