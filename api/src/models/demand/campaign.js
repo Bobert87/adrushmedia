@@ -55,18 +55,21 @@ class Campaign {
 
 	async getByGeoFilterZones(zoneIds) {
 		return db.campaign.findMany({
-			select: {
-				id: true,
-				ads: true,
+			where: {
 				status: "ACTIVE",
-				maxBid: true,
 				filters: {
-					where: {
+					some: {
 						type: "GEO",
 						operation: "IN",
-						value: { in: zoneIds },
+						value: {
+							in: zoneIds
+						},
 					},
 				},
+			},
+			include: {
+				filters: true,
+				ads: true,
 			},
 		});
 	}

@@ -7,8 +7,11 @@ const adModel = require("../../models/demand/ad");
 
 const getHitMap = require("../../utils/h3Cache");
 const h3 = require("h3-js");
+const { AdStatus } = require("@prisma/client");
+const { logger } = require("../../utils/loggers");
 
-const MAXSCHEDULETIME = 60000;
+const MAXSCHEDULETIME = 6000;
+const MINTIMEFORNEWSCHEDULE = 500;
 
 class Schedule {
 	constructor() {
@@ -51,7 +54,7 @@ class Schedule {
 		const lastScheduleTime = new Date(lastSchedule.createdAt);
 		console.log(currentTime - lastScheduleTime, "----->", lastSchedule);
 		const elapsedTimeInMiliseconds = currentTime - lastScheduleTime;
-		if (elapsedTimeInMiliseconds < 60000) {
+		if (elapsedTimeInMiliseconds < MINTIMEFORNEWSCHEDULE) {
 			return false;
 		}
 		return true;
@@ -162,10 +165,13 @@ class Schedule {
 		for (const campaignId in campaigns) {
 			const currentCampaign = campaigns[campaignId];
 			for (const ad of currentCampaign.ads){			
-				if (ad.status !== "ACTIVE") return;
+				if (ad.status !== AdStatus.ACTIVE) continue;
 				const maxBid = currentCampaign.maxBid;
 				const newAd = { ...ad, revenue: (maxBid * ad.duration) / 60000 };
-				if (newAd.targetDeviceType === device.type) ads.push(newAd);
+				//removing device type targeting for now
+				//if (newAd.targetDeviceType === device.type) 
+				logger.info(device.type)
+				ads.push(newAd);
 			};
 		}
 
@@ -189,7 +195,7 @@ class Schedule {
 			// Check if the device is already scheduled
 			const needsNewSchedule = await this.needsNewSchedule(device);
 			if (!needsNewSchedule) {
-				res.status(425).json({ error: "Device is already scheduled" });
+				res.status(425).json({ message: "Device is already scheduled" });
 				return;
 			}
 
@@ -210,6 +216,10 @@ class Schedule {
 
 			// Get the ads that fit in the time frame
 			const ads = this.fitAdsInTimeFrame(geoFilteredCampaigns, device);
+			if (ads.length === 0) {
+				res.status(404).json({ message: "No ads to show" });
+				return;
+			}			
 
 			// Create a schedule for the device
 			const createdSchedule = await this.scheduleModel.create(
@@ -222,20 +232,6 @@ class Schedule {
 			res.status(500).json({ error: error.message });
 		}
 	}
-	/******************
-	 * Inputs needed:
-	 * Device Location
-	 * transform Location H3 / R 7
-	 * Active Campaigns,
-	 * Targeted Zones H3 / R 7
-	 * Intersection between campaigns and device location,
-	 *  if there is an intersection, then increase resolution to R8
-	 *  if there is an intersection, then increase resolution to R9
-	 *  if there is an intersection, then increase resolution to R10
-	 *  if there is an intersection, then increase resolution to R11
-	 * Ads
-	 *  maybe use memoization for target resolutions
-	 * ****************/
 }
 
 module.exports = Schedule;

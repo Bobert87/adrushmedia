@@ -48,7 +48,8 @@ model Driver {
 enum AccountStatus {
   ACTIVE // USER
   PAUSED // USER
-  OVERDUE // SYSTEM  
+  OVERDUE // SYSTEM
+  MAXED_OUT // SYSTEM
   DELETED
 }
 
@@ -257,7 +258,7 @@ model Campaign {
   advertiserId  Int
   name          String
   brand         String
-  maxBid        Float
+  maxBid        Float //Max bid per minute
   dailyBudget   Decimal?
   monthlyBudget Decimal?
   status        CampaignStatus

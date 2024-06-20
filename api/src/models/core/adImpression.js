@@ -1,3 +1,5 @@
+const { Prisma } = require("@prisma/client");
+
 const db = require("../db").client;
 
 class AdImpression {
@@ -40,18 +42,27 @@ class AdImpression {
 		});
 	}
 
-	async getByCampaignIdsAndDateRangeGroupByDate(campaignIds, from, to) {
-		return db.adImpression.groupBy({
-			by: ["createdAt", "advertiserId", "campaignId"],
-			where: {
-				createdAt: {
-					between: [from, to],
-				},
-				campaignId: {
-					in: campaignIds,
-				},
-			},
-		});
+	async getAmountSumByCamapignIdsAndDateRanges(campaignIds, from, to) {
+		return db.$queryRaw`
+		SELECT 
+    		"a"."advertiserId",
+			"a"."campaignId", 	
+			"b"."id" as "cId",		
+			"b"."dailyBudget", 
+			"b"."monthlyBudget", 
+			date("a"."createdAt") AS "date",
+			sum("a"."amount") AS "sumAmount"
+		FROM 
+    		"adrush"."AdImpression" AS "a"
+    	JOIN
+    		"adrush"."Campaign" AS "b"
+    	ON
+    		"a"."campaignId" = "b"."id"
+		GROUP BY 
+    		1,2,3,6
+		HAVING 
+		 	"a"."campaignId" IN (${Prisma.join(campaignIds)}) AND
+		 	date("a"."createdAt") BETWEEN ${from} AND ${to};`;
 	}
 
 	async getByAdvertiserIdAndDateRange(advertiserId, from, to) {

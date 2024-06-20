@@ -1,44 +1,34 @@
-const { CampaignStatus } = require("@prisma/client");
-const adImpressionModel = require("../../models/core/adImpression");
-const campaignModel = require("../../models/demand/campaign");
+const AdImpressionModel = require("../../models/core/adImpression");
+const AdModel = require("../../models/demand/ad");
 
 class AdImpression {
 	constructor() {
-		this.adImpression = new adImpressionModel();
-		this.campaignModel = new campaignModel();
+		this.adImpression = new AdImpressionModel();
+		this.adModel = new AdModel();
+	}
+
+	randomDateForYearMonth(){
+		const currentMonth = new Date().getMonth();
+		const currentYear = new Date().getFullYear();
+		const randomDay = Math.floor(Math.random() * 30) + 1;
+		return new Date(currentYear, currentMonth, randomDay);
 	}
 	async create(req, res) {
-		try {
-			const adImpression = req.body;
-			const campaign = await this.campaignModel.getById(
-				adImpression.campaignId,
-				"campaign",
-			);
-			adImpression.amount = campaign.maxBid;
+		try {			
+			const adId = Number.parseInt(req.params.adId);
+			const ad = await this.adModel.getById(adId,"campaign");									;						
+			const adImpression = {
+				adId,
+				campaignId : ad.campaignId,
+				advertiserId: ad.campaign.advertiserId,
+				deviceId: Number.parseInt(req.params.deviceId),
+				latitude: Number.parseFloat(req.params.lat),
+				longitude: Number.parseFloat(req.params.lng),
+				scheduleId: Number.parseInt(req.params.scheduleId),
+				amount: ad.campaign.maxBid*ad.duration/60,
+				createdAt: this.randomDateForYearMonth(),//THIS MUST BE REMOVED IN PRODUCTION
+			}
 			const createdAdImpression = await this.adImpression.create(adImpression);
-			const currentmonth = new Date().getMonth();
-			const from = new Date(new Date().getFullYear(), currentmonth, 1);
-			const to = new Date(new Date().getFullYear(), currentmonth + 1, 1);
-			const spendLog = await this.adImpression.getByCampaignIdAndDateRange(
-				campaign.id,
-				from,
-				to,
-			);
-			const monthSpend = spendLog.reduce((acc, log) => acc + log.amount, 0);
-			const daySpend = spendLog.reduce((acc, log) => {
-				if (log.createdAt.getDay() === new Date().getDay()) acc + log.amount}, 0);
-			if (monthSpend > campaign.monthlyBudget) {
-				campaign.lastStatus = campaign.status;
-				campaign.status = CampaignStatus.MAXED_OUT_MONTH;
-			}
-
-			if (daySpend > campaign.dailyBudget) {
-				campaign.lastStatus = campaign.status;
-				campaign.status = CampaignStatus.MAXED_OUT_DAY;
-			}
-
-			this.campaignModel.update(campaign.id, campaign);
-
 			res.json(createdAdImpression);
 		} catch (error) {
 			res.status(500).json({ error: error.message });

@@ -24,14 +24,7 @@ class Loggers {
 		if (status >= 400) statusChalk = chalk.yellow;
 		if (status >= 500) statusChalk = chalk.red;
 		return (
-			`${chalk.yellow(tokens.date(req, res))} 			
-			${chalk.white(tokens["remote-addr"](req, res))}			
-			${chalk.cyanBright(tokens.method(req, res))}
-			${chalk.white(tokens.url(req, res))}
-			${statusChalk(tokens.status(req, res))}						
-			${chalk.white(tokens["response-time"](req, res))} ms
-			${chalk.magenta(res._contentLength)}  bytes`
-		);
+			`${chalk.yellow(tokens.date(req, res))} ${chalk.white(tokens["remote-addr"](req, res))} ${chalk.cyanBright(tokens.method(req, res))} ${chalk.white(tokens.url(req, res))} ${statusChalk(tokens.status(req, res))} ${chalk.white(tokens["response-time"](req, res))} ms ${chalk.magenta(res._contentLength)} bytes`);
 	}
 
 	createMorganLogger() {
