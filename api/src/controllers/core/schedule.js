@@ -51,10 +51,10 @@ class Schedule {
 		//If no last schedule was found, then we can create a new one
 		if (lastSchedule === null) return true;
 
-		const lastScheduleTime = new Date(lastSchedule.createdAt);
-		console.log(currentTime - lastScheduleTime, "----->", lastSchedule);
+		const lastScheduleTime = new Date(lastSchedule.createdAt);		
 		const elapsedTimeInMiliseconds = currentTime - lastScheduleTime;
-		if (elapsedTimeInMiliseconds < MINTIMEFORNEWSCHEDULE) {
+		if (elapsedTimeInMiliseconds < MINTIMEFORNEWSCHEDULE) {			
+			logger.info(`Last scheduled ${elapsedTimeInMiliseconds} ms ago, minimum time for rescheduling is ${MINTIMEFORNEWSCHEDULE} ms.`);
 			return false;
 		}
 		return true;
@@ -97,46 +97,6 @@ class Schedule {
 				};
 		}
 		return campaigns;
-	}
-
-	campaignsWithGeoFilter(campaigns) {
-		return campaigns.filter((campaign) =>
-			campaign.filters.some((filter) => {
-				return filter.type === "GEO" && filter.operation === "IN";
-			}),
-		);
-	}
-
-	filterZones(zones, device) {
-		const filteredZone = [];
-		const deviceH3 = h3.latLngToCell(
-			device.location.lat,
-			device.location.lng,
-			8,
-		);
-		for (const zone of zones){
-			for (const area of zone.areas){			
-				const zoneHex = h3.polygonToCells(area.polygon.coordinates, 8);
-				if (zoneHex.indexOf(deviceH3) > -1) filteredZone.push(zone);
-			};
-		};
-		return filteredZone;
-	}
-
-	formatAreas(zones) {
-		const formatedZones = JSON.parse(JSON.stringify(zones));
-		for (const zone of formatedZones){
-			for (const area of zone.areas) {			
-				const coordinates = area.polygon.coordinates;
-				const formatedPolygon = [];
-				for (let i = 0; i < coordinates.length; i = i + 2) {
-					const element = [coordinates[i + 1], coordinates[i]];
-					formatedPolygon.push(element);
-				}
-				area.polygon.coordinates = formatedPolygon;
-			};
-		};
-		return formatedZones;
 	}
 
 	getCampaignZoneDictionary(campaigns) {

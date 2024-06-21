@@ -26,7 +26,7 @@ class AdImpression {
 				longitude: Number.parseFloat(req.params.lng),
 				scheduleId: Number.parseInt(req.params.scheduleId),
 				amount: ad.campaign.maxBid*ad.duration,///60,
-				createdAt: this.randomDateForYearMonth(),//THIS MUST BE REMOVED IN PRODUCTION
+				//createdAt: this.randomDateForYearMonth(),//THIS MUST BE REMOVED IN PRODUCTION
 			}
 			const createdAdImpression = await this.adImpression.create(adImpression);
 			res.json(createdAdImpression);

@@ -7,7 +7,7 @@ async function checkOverdueInvoices() {
 	for (const invoice of invoices) {
 		const today = new Date();
 		if (today > invoice.dueDate) {
-			await invoiceModel.update(invoice.id, { status: "overdue" });
+			await invoiceModel.update(invoice.id, { status: InvoiceStatus.OVERDUE });
 		}
 	};
 }

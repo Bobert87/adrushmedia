@@ -1180,7 +1180,7 @@ async function main() {
 				],
 			},
 			{
-				name: "Rosevelt",
+				name: "Roosevelt",
 				coordinates: [
 					-90.5573168, 14.6255249, -90.5460729, 14.6192961, -90.545515,
 					14.620355, -90.5618014, 14.6296566, -90.5697698, 14.6346806,
@@ -1238,7 +1238,7 @@ async function main() {
 				name: "Premium Zone",
 				type: "GEO",
 				operation: "IN",
-				value: "1",
+				value: "1", // campana muestrela si device esta en zona premium
 			},
 			{
 				campaignId: 1,

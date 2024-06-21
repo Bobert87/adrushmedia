@@ -39,6 +39,11 @@ async function getH3Map(useCache = true) {
 	return map;
 }
 
+/**
+ * Retrieves the hit map based on the given location.
+ * @param {Object} location - The location object containing latitude and longitude.
+ * @returns {Object} - The hit map object containing zone IDs and corresponding areas.
+ */
 async function getHitMap(location) {
 	const h3Map = await getH3Map();
 	const h3Hit = {};

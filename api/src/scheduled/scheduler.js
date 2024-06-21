@@ -18,7 +18,7 @@ class scheduledTasksManager {
 		//At midnight every day
 		this.tasks.push(
 			cron.schedule("0 0 * * *", () => {
-				generateInvoices();
+				//
 			}),
 		);
 
