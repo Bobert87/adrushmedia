@@ -7,6 +7,11 @@ class AdImpression {
 		this.adModel = new AdModel();
 	}
 
+	/**
+	 * Generates a random date within the current year and month. This intended for testing or 
+	 * simulation purposes only.
+	 * @returns {Date} A random date within the current year and month.
+	 */
 	randomDateForYearMonth(){
 		const currentMonth = new Date().getMonth();
 		const currentYear = new Date().getFullYear();

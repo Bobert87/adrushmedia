@@ -4,6 +4,7 @@ const deviceModel = require("../../models/supply/device");
 const polygonModel = require("../../models/core/polygon");
 const zoneModel = require("../../models/core/zone");
 const adModel = require("../../models/demand/ad");
+const { floatArrayToLatLngArray } = require("../../utils/floatArrayToLatLngArray");
 
 const getHitMap = require("../../utils/h3Cache");
 const h3 = require("h3-js");
@@ -23,6 +24,13 @@ class Schedule {
 		this.adsModel = new adModel();
 	}
 
+	/**
+	 * Retrieves a device by its ID and returns the device object with location information.
+	 * If the device is of type "LOCATION", the latitude and longitude are extracted from the asset details.
+	 * Otherwise, the latitude and longitude are obtained from the request parameters.
+	 * @param {Object} req - The request object.
+	 * @returns {Promise<Object>} The device object with location information.
+	 */
 	async getDevice(req) {
 		const deviceId = req.params.deviceId;
 		const device = await this.deviceModel.getById(deviceId, "assetDetails");
@@ -42,6 +50,13 @@ class Schedule {
 		device.location = location;
 		return device;
 	}
+	/**
+	 * Checks if a new schedule is needed for the given device. A new schedule is needed if the last 
+	 * schedule was served more than MINTIMEFORNEWSCHEDULE seconds ago.
+	 *
+	 * @param {object} device - The device object.
+	 * @returns {boolean} - Returns true if a new schedule is needed, false otherwise.
+	 */
 	async needsNewSchedule(device) {
 		//discard creating  new schedule if the last was served less than x time ago.
 		const currentTime = new Date();
@@ -67,7 +82,7 @@ class Schedule {
 		const h3HexByZone = {};
 		for (const zone of allZones) {
 			for (const area of zone.areas) {
-				const latLngArray = this.floatArrayToLatLngArray(
+				const latLngArray = floatArrayToLatLngArray(
 					area.polygon.coordinates,
 				);
 				const h3Hexes = h3.polygonToCells(latLngArray, 8);
@@ -78,6 +93,13 @@ class Schedule {
 		return h3HexByZone;
 	}
 
+	/**
+	 * Determines the campaigns associated with a device based on its location and campaign zone dictionary.
+	 *
+	 * @param {Object} device - The device object containing location information.
+	 * @param {Array} campaignZoneDictionary - The array of campaign zones.
+	 * @returns {Object} - The campaigns associated with the device.
+	 */
 	async deviceInZone(device, campaignZoneDictionary) {
 		const campaigns = {};
 		const h3Areas = await this.generateH3HexesByZone(
@@ -99,6 +121,11 @@ class Schedule {
 		return campaigns;
 	}
 
+	/**
+	 * Retrieves the campaign zone dictionary from the given campaigns.
+	 * @param {Array} campaigns - The array of campaigns.
+	 * @returns {Array} - The campaign zone dictionary.
+	 */
 	getCampaignZoneDictionary(campaigns) {
 		const zones = [];
 		for (const campaign of campaigns){		
@@ -111,15 +138,15 @@ class Schedule {
 		return zones;
 	}
 
-	floatArrayToLatLngArray(floatArray) {
-		const latLngArray = [];
-		for (let i = 0; i < floatArray.length; i = i + 2) {
-			const element = [floatArray[i + 1], floatArray[i]];
-			latLngArray.push(element);
-		}
-		return latLngArray;
-	}
+	
 
+	/**
+	 * Fits the ads within the given time frame based on the provided campaigns and device.
+	 *
+	 * @param {Object} campaigns - The campaigns object containing campaign information.
+	 * @param {Object} device - The device object containing device information.
+	 * @returns {Array} - An array of ads that fit within the time frame.
+	 */
 	fitAdsInTimeFrame(campaigns, device) {
 		const ads = [];
 		for (const campaignId in campaigns) {
@@ -144,6 +171,14 @@ class Schedule {
 		return ads;
 	}
 
+	/**
+	 * Creates a schedule for a device based on certain criteria.
+	 * 
+	 * @param {Object} req - The request object.
+	 * @param {Object} res - The response object.
+	 * @returns {Promise<void>} - A promise that resolves when the schedule is created.
+	 * @throws {Error} - If there is an error during the creation of the schedule.
+	 */
 	async create(req, res) {
 		try {
 			// Get device + location (static, it comes from asset, dyanmic, it comes from the request)

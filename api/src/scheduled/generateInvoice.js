@@ -3,16 +3,15 @@ const AdvertiserModel = require("../models/demand/advertiser");
 const InvoiceModel = require("../models/core/invoice");
 const { Term } = require("@prisma/client");
 const { logger } = require("../utils/loggers");
+const { groupByKey } = require("../utils/groupByKey");
 
-function groupByKey(objArr, ObjKey) {
-	return objArr.reduce((arr, item) => {
-		const key = item[ObjKey];
-		arr[key] = arr[key] ?? [];
-		arr[key].push(item);
-		return arr;
-	}, {});
-}
 
+/**
+ * Returns the number of days based on the given term.
+ *
+ * @param {string} term - The term to calculate the number of days for.
+ * @returns {number} The number of days based on the given term.
+ */
 function getDaysFromTerm(term) {
 	switch (term) {
 		case Term.NET_15:
@@ -27,6 +26,10 @@ function getDaysFromTerm(term) {
 			return 15;
 	}
 }
+/**
+ * Generates invoices for ad impressions based on a specified date range.
+ * @returns {Promise<Object>} A promise that resolves to the created invoices.
+ */
 async function generateInvoices() {
 	const adImpressionModel = new AdImpressionModel();
 	const advertiserModel = new AdvertiserModel();

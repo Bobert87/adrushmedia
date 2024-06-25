@@ -3,6 +3,9 @@ const generateInvoices = require("./generateInvoice");
 const AdvertiserStatusUpdater = require("./advertiserStatusUpdater");
 const CampaignStatusUpdater = require("./campaignStatusUpdater");
 
+/**
+ * Manages the scheduled tasks for updating advertiser and campaign statuses.
+ */
 class scheduledTasksManager {
 	constructor() {
 		this.advertiserStatusUpdater = new AdvertiserStatusUpdater();

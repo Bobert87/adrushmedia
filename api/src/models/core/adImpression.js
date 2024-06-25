@@ -42,6 +42,14 @@ class AdImpression {
 		});
 	}
 
+	/**
+	 * Retrieves the sum of amount by campaign IDs and date ranges.
+	 *
+	 * @param {Array<number>} campaignIds - The array of campaign IDs.
+	 * @param {Date} from - The start date of the date range.
+	 * @param {Date} to - The end date of the date range.
+	 * @returns {Promise<Array<Object>>} The sum of amount grouped by advertiser ID, campaign ID, campaign's daily budget, campaign's monthly budget, and date.
+	 */
 	async getAmountSumByCamapignIdsAndDateRanges(campaignIds, from, to) {
 		return db.$queryRaw`
 		SELECT 

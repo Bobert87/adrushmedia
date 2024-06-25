@@ -6,10 +6,19 @@ const {
 	InvoiceStatus,
 } = require("@prisma/client");
 
+/**
+ * Class representing an Advertiser Status Updater.
+ * This class provides methods to pause advertisers with overdue invoices
+ * and activate advertisers with paid invoices.
+ */
 class AdvertiserStatusUpdater {
 	constructor() {
 		this.advertiserModel = new advertiser();
 	}
+	/**
+	 * Pauses advertisers with overdue invoices.
+	 * @returns {Promise<Array>} The updated advertisers.
+	 */
 	async pauseAdvertisersWithOverdueInvoice() {
 		const advertisers = await this.advertiserModel.getByInvoiceStatus(
 			InvoiceStatus.OVERDUE,
@@ -44,6 +53,11 @@ class AdvertiserStatusUpdater {
 		return updatedAdvertisers;
 	}
 
+	/**
+	 * Activates advertisers with paid invoices.
+	 * Retrieves advertisers with overdue campaigns and invoices,
+	 * and updates their status accordingly.
+	 */
 	async activateAdversitersWithPaidInvoices() {
 		const advertisers = await this.advertiserModel.getByStatus(
 			CampaignStatus.OVERDUE,
@@ -74,6 +88,11 @@ class AdvertiserStatusUpdater {
 		};
 	}
 
+	/**
+	 * Updates the status of advertisers based on their invoices.
+	 * Activates advertisers with paid invoices and pauses advertisers with overdue invoices.
+	 * @returns {Object} An object containing the number of advertisers activated and paused.
+	 */
 	async updateAdvertisersStatus() {
 		const pausedToActive = await this.activateAdversitersWithPaidInvoices();
 		const activeToPaused = await this.pauseAdvertisersWithOverdueInvoice();

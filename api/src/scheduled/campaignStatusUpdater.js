@@ -2,26 +2,31 @@ const { logger } = require("../utils/loggers");
 const CampaignModel = require("./../models/demand/campaign");
 const { CampaignStatus } = require("@prisma/client");
 const AdImpressionModel = require("./../models/core/adImpression");
+const { groupByKey } = require("../utils/groupByKey");
 
+/**
+ * Represents a CampaignStatusUpdater object.
+ */
 class CampaignStatusUpdater {
+	/**
+	 * Represents a CampaignStatusUpdater object.
+	 * @constructor
+	 */
 	constructor() {
 		this.campaignModel = new CampaignModel();
 		this.adImpression = new AdImpressionModel();
 	}
 
+	
+	/**
+	 * Updates the status of campaigns, based on the daily and monthly maximum budgets.
+	 * @returns {Promise} A promise that resolves when the campaign status has been updated.
+	 */
 	async updateCampaignStatus() {
 		const campaigns = await this.campaignModel.getByStatus(
 			CampaignStatus.ACTIVE,
 		);
-		const groupByKey = (objArr, ObjKey) => {
-			return objArr.reduce((arr, item) => {
-				const key = item[ObjKey];
-				arr[key] = arr[key] ?? [];
-				arr[key].push(item);
-				return arr;
-			}, {});
-		}
-
+		
 		const currentMonth = new Date().getMonth();
 		const currentYear = new Date().getFullYear();
 		const from = new Date(currentYear, currentMonth, 1);
@@ -76,6 +81,7 @@ class CampaignStatusUpdater {
 		logger.info(`Updating Campaign Status to MAXED_OUT_MONTH campaignIds [${campaignsThatExceedMonthlyBudget.map((campaign) => {return campaign.campaignId}).join(',')}] found. `);
 		//TODO: Implement the logic to update the campaign status based on the ad impressions
 		// FIRST I NEED TO CREATE IMPRESSIONS FOR CAMPAIGNS
+		return await this.campaignModel.updateStatus(campaignsThatExceedDailyBudget.concat(campaignsThatExceedMonthlyBudget));
 	}
 }
 

@@ -2,6 +2,11 @@ const redis = require("ioredis");
 const zoneModel = require("../models/core/zone");
 const h3 = require("h3-js");
 
+/**
+ * Retrieves the H3 map from cache or database.
+ * @param {boolean} useCache - Flag indicating whether to use cache or not. Default is true.
+ * @returns {Promise<Array>} - A promise that resolves to an array representing the H3 map.
+ */
 async function getH3Map(useCache = true) {
 	const client = new redis();
 	let map = [];
