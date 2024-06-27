@@ -421,13 +421,13 @@ model Invoice {
   amount       Decimal
   taxes        Decimal
   status       InvoiceStatus @default(SENT)
-  lineItems    lineItem[]
+  lineItems    LineItem[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @default(now())
   deletedAt    DateTime?
 }
 
-model lineItem{
+model LineItem{
   id Int @id @default(autoincrement())
   invoiceId Int
   invoice Invoice @relation(fields: [invoiceId], references: [id])
@@ -436,6 +436,7 @@ model lineItem{
   unitPrice Decimal
   total Decimal
   createdAt DateTime @default(now())
+	@@map("lineItem")
 }
 
 enum InvoiceStatus {

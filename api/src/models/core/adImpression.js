@@ -55,19 +55,20 @@ class AdImpression {
 		SELECT 
     		"a"."advertiserId",
 			"a"."campaignId", 	
-			"b"."id" as "cId",		
-			"b"."dailyBudget", 
-			"b"."monthlyBudget", 
+			"c"."id" as "cId",
+			"c"."status", 
+			"c"."dailyBudget", 
+			"c"."monthlyBudget", 
 			date("a"."createdAt") AS "date",
 			sum("a"."amount") AS "sumAmount"
 		FROM 
     		"adrush"."AdImpression" AS "a"
     	JOIN
-    		"adrush"."Campaign" AS "b"
+    		"adrush"."Campaign" AS "c"
     	ON
-    		"a"."campaignId" = "b"."id"
+    		"a"."campaignId" = "c"."id"
 		GROUP BY 
-    		1,2,3,6
+    		1,2,3,7
 		HAVING 
 		 	"a"."campaignId" IN (${Prisma.join(campaignIds)}) AND
 		 	date("a"."createdAt") BETWEEN ${from} AND ${to};`;

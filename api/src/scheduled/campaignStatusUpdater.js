@@ -45,20 +45,23 @@ class CampaignStatusUpdater {
 			for (const dayImpressions of campaign){
 				const now = new Date().getDate();
 				const isToday = dayImpressions.date.getDate() === now;
-				const isMaxedOut = dayImpressions.sumAmount > dayImpressions.dailyBudget;
-				if (isToday && isMaxedOut) {
+				const isMaxedOutForDay = dayImpressions.sumAmount > dayImpressions.dailyBudget;
+				const isActive = dayImpressions.status === CampaignStatus.ACTIVE;
+				if (isToday && isMaxedOutForDay && isActive) {
 					const dailyMaxedOutCampaign = {
 						campaignId: dayImpressions.campaignId,
 						date: dayImpressions.date,
 						sumAmount: dayImpressions.sumAmount,
 						dailyBudget: dayImpressions.dailyBudget,
 						status: CampaignStatus.MAXED_OUT_DAY,					
-					}
-					campaignsThatExceedDailyBudget.push(dailyMaxedOutCampaign);
+					}					
+					campaignsThatExceedDailyBudget.push(dailyMaxedOutCampaign);					
 				}
 			}			
 			const amount = campaign.reduce((acc, dayImpressions) => acc + Number.parseFloat(dayImpressions.sumAmount), 0);
-			if (amount >campaign[0].monthlyBudget){				
+			const isMaxedOutForMonth = amount > campaign[0].monthlyBudget;
+			const isActive = campaign[0].status === CampaignStatus.ACTIVE;
+			if (isMaxedOutForMonth && isActive){				
 				const monthlyMaxedOutCampaign = {
 					campaignId: campaign[0].campaignId,
 					month: campaign[0].date.getMonth()+1,
@@ -69,19 +72,33 @@ class CampaignStatusUpdater {
 				campaignsThatExceedMonthlyBudget.push(monthlyMaxedOutCampaign);
 			}
 		}
+		
+		logger.info("Filtering campaigns which exceed monthly budget from the list of campaigns that exceed daily budget. As monthly budget has more presedence.");
+		const filteredCampaignsThatExceedDailyBudget = campaignsThatExceedDailyBudget.filter((campaign) => {
+			campaignsThatExceedMonthlyBudget.find((monthlyCampaign) => {
+				return monthlyCampaign.campaignId === campaign.campaignId;
+			})
+		});
+		
 
 		logger.info(adImpressionsByCampaign);
 		// The adImpressionsToday is an array of objects with the sumAmount > dailyBudget
 		// This list needs to be updated to maxed out for the day.
 		logger.info(campaignsThatExceedDailyBudget)
 		logger.info(campaignsThatExceedMonthlyBudget)
+		logger.info(filteredCampaignsThatExceedDailyBudget)
 		logger.info(adImpressions);
 
+		const updatedCampaigns = [];
 		logger.info(`Updating Campaign Status to MAXED_OUT_DAY campaignIds:[${campaignsThatExceedDailyBudget.map((campaign) => {return campaign.campaignId}).join(',')}] found. `);
+		const updatedCampaignsThatExceedDailyBudget = this.campaignModel.updateStatusByIds(campaignsThatExceedDailyBudget.map((campaign) => {return campaign.campaignId}), CampaignStatus.MAXED_OUT_DAY);
 		logger.info(`Updating Campaign Status to MAXED_OUT_MONTH campaignIds [${campaignsThatExceedMonthlyBudget.map((campaign) => {return campaign.campaignId}).join(',')}] found. `);
+		const updatedCampaignsThatExceedMonthlyBudget = this.campaignModel.updateStatusByIds(campaignsThatExceedMonthlyBudget.map((campaign) => {return campaign.campaignId}), CampaignStatus.MAXED_OUT_MONTH);
 		//TODO: Implement the logic to update the campaign status based on the ad impressions
 		// FIRST I NEED TO CREATE IMPRESSIONS FOR CAMPAIGNS
-		return await this.campaignModel.updateStatus(campaignsThatExceedDailyBudget.concat(campaignsThatExceedMonthlyBudget));
+		updatedCampaigns.push(updatedCampaignsThatExceedDailyBudget);
+		updatedCampaigns.push(updatedCampaignsThatExceedMonthlyBudget);
+		return updatedCampaigns;
 	}
 }
 

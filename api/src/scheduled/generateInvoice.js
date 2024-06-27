@@ -28,6 +28,8 @@ function getDaysFromTerm(term) {
 }
 /**
  * Generates invoices for ad impressions based on a specified date range.
+ * NOTE: There will be only one line item per invoice. The line item description will be "Ad Impressions",
+ * and will contain the total amount of ad impressions and the total amount of the invoice.
  * @returns {Promise<Object>} A promise that resolves to the created invoices.
  */
 async function generateInvoices() {
@@ -45,17 +47,15 @@ async function generateInvoices() {
 	const invoices = [];
 	for (const advertiserId in impressionsByAdvertisers) {
 		const adImpressions = impressionsByAdvertisers[advertiserId];
+		const adImpressionsAmount = adImpressions.reduce((acc, impression) => acc + impression.amount,0,)
 		const invoice = {
 			advertiserId: advertiserId,
 			lineItems: {
 				description: "Ad Impressions",
-				amount: adImpressions.reduce(
-					(acc, impression) => acc + impression.amount,
-					0,
-				),
+				amount: adImpressionsAmount,
 				quantity: adImpressions.length,
 			},
-			amount: 0, //TODO --> Review //lineItems.reduce((acc,impression) => acc + impression.amount,0),
+			amount: adImpressionsAmount,
 			dueDate: new Date() + getDaysFromTerm(advertisersById),
 		};
 		invoices.push(invoice);

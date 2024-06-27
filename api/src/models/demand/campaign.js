@@ -1,4 +1,5 @@
 const db = require("../db").client;
+const { Prisma } = require("@prisma/client");
 
 class Campaign {
 	getIncludes(includes) {
@@ -122,6 +123,17 @@ class Campaign {
 				...campaign,
 			},
 		});
+	}
+
+	async updateStatusByIds(ids, status) {
+		return db.$queryRaw`
+		UPDATE 
+			"adrush"."Campaign"
+		SET 
+			"lastStatus" = "status",
+			"status" = ${status}
+		WHERE
+    		"id" IN (${Prisma.join(ids)})`
 	}
 
 	async delete(id) {
