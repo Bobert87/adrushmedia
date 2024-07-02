@@ -50,9 +50,9 @@ export default function MainLayout() {
                 <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" />
               </div>
               <nav className="flex flex-1 flex-col">
-                <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                <ul className="flex flex-1 flex-col gap-y-7">
                   <li>
-                    <ul role="list" className="-mx-2 space-y-1">
+                    <ul className="-mx-2 space-y-1">
                       {navigation.map((item) => (
                         <li key={item.name}>
                           <Link to={item.to} className={classNames(item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6')}>
@@ -65,7 +65,7 @@ export default function MainLayout() {
                   </li>
                   <li>
                     <div className="text-xs font-semibold leading-6 text-gray-400">Your teams</div>
-                    <ul role="list" className="-mx-2 mt-2 space-y-1">
+                    <ul className="-mx-2 mt-2 space-y-1">
                       {teams.map((team) => (
                         <li key={team.name}>
                           <Link to={team.to} className={classNames(team.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6')}>
@@ -95,7 +95,7 @@ export default function MainLayout() {
             <img className="h-8 w-auto" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" />
           </div>
           <nav className="flex flex-1 flex-col">
-            <ul role="list" className="flex flex-1 flex-col gap-y-7">
+            <ul className="flex flex-1 flex-col gap-y-7">
               {navigation.map((item) => (
                 <li key={item.name}>
                   <Link to={item.to} className={classNames(item.current ? 'bg-gray-800 text-white' : 'text-gray-400 hover:bg-gray-800 hover:text-white', 'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6')}>
