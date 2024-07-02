@@ -10,7 +10,7 @@ class Campaign {
 			include.tags = { select: { tag: true } };
 		if (parsedincludes.indexOf("ads") > -1) include.ads = true;
 		if (parsedincludes.indexOf("filters") > -1) include.filters = true;
-		if (parsedincludes.indexOf("advertiser") > -1) include.advertisers = true;
+		if (parsedincludes.indexOf("advertiser") > -1) include.advertiser = true;
 		if (parsedincludes.indexOf("adImpressions") > -1)
 			include.adImpressions = true;
 		return { include: include };

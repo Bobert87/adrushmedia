@@ -94,8 +94,7 @@ class CampaignStatusUpdater {
 		const updatedCampaignsThatExceedDailyBudget = this.campaignModel.updateStatusByIds(campaignsThatExceedDailyBudget.map((campaign) => {return campaign.campaignId}), CampaignStatus.MAXED_OUT_DAY);
 		logger.info(`Updating Campaign Status to MAXED_OUT_MONTH campaignIds [${campaignsThatExceedMonthlyBudget.map((campaign) => {return campaign.campaignId}).join(',')}] found. `);
 		const updatedCampaignsThatExceedMonthlyBudget = this.campaignModel.updateStatusByIds(campaignsThatExceedMonthlyBudget.map((campaign) => {return campaign.campaignId}), CampaignStatus.MAXED_OUT_MONTH);
-		//TODO: Implement the logic to update the campaign status based on the ad impressions
-		// FIRST I NEED TO CREATE IMPRESSIONS FOR CAMPAIGNS
+		
 		updatedCampaigns.push(updatedCampaignsThatExceedDailyBudget);
 		updatedCampaigns.push(updatedCampaignsThatExceedMonthlyBudget);
 		return updatedCampaigns;

@@ -1,6 +1,7 @@
 //const scheduledTasks = require("./scheduled/scheduler");
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const cors = require('cors')
 
 const advertiserRouter = require("./routes/demand/advertiser");
 const campaignRouter = require("./routes/demand/campaign");
@@ -22,6 +23,7 @@ const { logger, webLogger } = require("./utils/loggers");
 const app = express();
 
 app.use(webLogger);
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());

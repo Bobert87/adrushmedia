@@ -16,9 +16,26 @@ class Advertiser {
 		return { include: include };
 	}
 
-	async getAll(include) {
+	getSorts(sort){
+		const orderBy = {};
+		orderBy[sort.key]=sort.order;
+		return orderBy;
+	}
+
+	getPagination(pageSize, currentPage){
+		const pagination = {
+			skip: (currentPage-1)*pageSize,
+			take: pageSize,
+		}
+
+		return pagination;
+	}
+
+	async getAll(options) {
 		return db.advertiser.findMany({
-			...this.getIncludes(include),
+			...this.getIncludes(options.include),
+			...this.getSorts(options.sort),
+
 		});
 	}
 
