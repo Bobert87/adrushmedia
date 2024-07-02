@@ -1,4 +1,3 @@
-import StatCard from "../components/StatCards/StatCardSimple";
 import StatsBar from "../components/StatsBar";
 import TableCondensed from "../components/TableCondensed";
 import React, { useState, useEffect } from 'react';
