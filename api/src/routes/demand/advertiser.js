@@ -7,14 +7,19 @@ router.get("/", async (req, res) => {
 	await advertiser.getAll(req, res);
 });
 
+router.get("/stats/all", async (req, res) => {
+	const advertiser = new Advertiser();
+	await advertiser.getStats(req, res);
+});
+
 router.get("/:id", async (req, res) => {
 	const advertiser = new Advertiser();
 	await advertiser.getById(req, res);
 });
 
 router.get("/status/:status", async (req, res) => {
-	const campaign = new Advertiser();
-	await campaign.getByStatus(req, res);
+	const advertiser = new Advertiser();
+	await advertiser.getByStatus(req, res);
 });
 
 router.post("/", async (req, res) => {

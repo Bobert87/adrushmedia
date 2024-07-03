@@ -16,15 +16,17 @@ class Advertiser {
 		return { include: include };
 	}
 
-	getSorts(sort){
+	getSorts(sort) {
 		const orderBy = {};
-		orderBy[sort.key]=sort.order;
+		if (sort){
+			orderBy[sort.key] = sort.order;
+		}
 		return orderBy;
 	}
 
-	getPagination(pageSize, currentPage){
+	getPagination(pageSize, currentPage) {
 		const pagination = {
-			skip: (currentPage-1)*pageSize,
+			skip: (currentPage - 1) * pageSize,
 			take: pageSize,
 		}
 
@@ -102,6 +104,23 @@ class Advertiser {
 		return db.advertiser.delete({
 			where: { id: Number.parseInt(id) },
 		});
+	}
+
+	async getStats() {
+		return db.$queryRaw`SELECT 
+		ROUND(cast (COUNT(DISTINCT("adv"."id")) as decimal),2) as activeAdvertisers,
+		ROUND(cast (COUNT(DISTINCT("cpm"."id")) as decimal),2) as activeCampaigns,
+		ROUND(cast (SUM("cpm"."monthlyBudget") as decimal),2) as totalMonthlyBudget,
+		ROUND(cast (AVG("cpm"."maxBid") as decimal),2) as averageMaxBid
+	FROM 
+		"adrush"."Advertiser" as "adv" 
+		JOIN
+			"adrush"."Campaign" as "cpm"
+		ON
+			"adv"."id" = "cpm"."advertiserId"
+		WHERE
+			"cpm"."status" = 'ACTIVE'
+		`
 	}
 }
 

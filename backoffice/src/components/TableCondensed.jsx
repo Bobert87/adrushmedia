@@ -30,7 +30,7 @@ export default function DataTable({ headers, data }) {
 	};
 
 	const sortedData = () => {
-		const sortableData = [...data];
+		const sortableData = data?[...data]:[];
 		if (sortConfig.direction !== SortDirection.NONE) {
 			sortableData.sort((a, b) => {
 				const aValue = a[sortConfig.key];
@@ -63,8 +63,8 @@ export default function DataTable({ headers, data }) {
 
 	const totalPages = Math.ceil(sortedData().length / pageSize);
 
-	return (
-		<div className="px-4 sm:px-6 lg:px-8">
+	return (		
+		<div className="px-4 sm:px-6 lg:px-8">					
 			<div className="mt-8 flow-root">
 				<div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
 					<div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
@@ -115,7 +115,7 @@ export default function DataTable({ headers, data }) {
 				<div>
 					<span className="text-sm text-gray-700">
 						Showing {currentPage === 1 ? 1 : (currentPage - 1) * pageSize + 1}{" "}
-						to {Math.min(currentPage * pageSize, data.length)} of {data.length}{" "}
+						to {Math.min(currentPage * pageSize, data?data.length:0)} of {data?data.length:0}{" "}
 						entries
 					</span>
 				</div>
@@ -206,10 +206,12 @@ const renderCell = (value, header, row) => {
 
 	const dataType = header.dataType;
 	const actionKey = header.actionKey;
-	const path = actionKey ? `${header.action}/${row[actionKey]}` : value;
+	const path = actionKey ? `${header.action.replace("{actionKey}",row[actionKey])}` : value;
 	switch (dataType) {
 		case "money":
 			return `$${Number.parseFloat(value).toFixed(2)}`;
+        case "duration":
+			return `${Number.parseFloat(value)} sec`;
 		case "number":
 			return Number.parseFloat(value).toFixed(2);
 		case "enum":
@@ -234,6 +236,12 @@ const renderCell = (value, header, row) => {
 					{header.label}
 				</Link>
 			);
+            case "url":
+                return (
+                    <a href={value} className="text-indigo-600 hover:text-indigo-900">
+                        {value}
+                    </a>
+                );
 		default:
 			return value;
 	}

@@ -17,11 +17,11 @@ const headers = [
   { label: "End Date", key: "endDate", dataType: "dateMMDDYYYYHHmm" },  // Assuming formatted date/time
   { label: "Created At", key: "createdAt", dataType: "dateMMDDYYYYHHmm" },  // Assuming formatted date/time
   { label: "Updated At", key: "updatedAt", dataType: "dateMMDDYYYYHHmm" },  // Assuming formatted date/time  
-  { label: "Advertiser", key: "advertiser", dataType: "action", action: "/advertisers", actionKey: "advertiserId" },
-  { label: "Ads", key: "ads", dataType: "action", action: "/ads", actionKey: "id" },
-  { label: "Tags", key: "tags", dataType: "action", action: "/tags", actionKey: "id" },
+  { label: "Advertiser", key: "advertiser", dataType: "action", action: "/advertisers/{actionKey}", actionKey: "advertiserId" },
+  { label: "Ads", key: "ads", dataType: "action", action: "/ads/{actionKey}", actionKey: "id" },
+  { label: "Tags", key: "tags", dataType: "action", action: "/tags/{actionKey}", actionKey: "id" },
   { label: "Filters", key: "filters", dataType: "action", action: "/filters", actionKey: "id" },
-  { label: "Ad Impressions", key: "adImpressions", dataType: "action", action: "/adImpressions", actionKey: "id" },
+  { label: "Ad Impressions", key: "adImpressions", dataType: "action", action: "/adImpressions/{actionKey}", actionKey: "id" },
 ];
 
 export default function Campaigns() {
@@ -45,8 +45,8 @@ export default function Campaigns() {
   }, []);
     return (
     <>
-        <h2 className="mt-2 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">Advertisers</h2>
-        <StatsBar stats={na}  />
+        <h2 className="mt-2 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">Campaigns</h2>
+        {/* <StatsBar stats={na}  /> */}
         <TableCondensed headers={headers} data={campaignData}  />
         {/* <dl className="mx-auto grid max-w-7xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 lg:px-2 xl:px-0 space-x-3">
         <StatCard item={na}/>

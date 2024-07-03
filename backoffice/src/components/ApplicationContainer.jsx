@@ -6,6 +6,7 @@ import { CalendarIcon, ChartPieIcon, Cog6ToothIcon, DocumentDuplicateIcon, Folde
 import StickySearchBar from './StickySearchBar';
 import Campaigns from '../pages/Campaigns';
 import Ads from '../pages/Ads';
+import Publishers from '../pages/Publishers';
 
 
 const navigation = [
@@ -13,7 +14,7 @@ const navigation = [
   { name: 'Advertisers', to: '/advertisers', icon: UsersIcon, current: false },
   { name: 'Campaigns', to: '/campaigns', icon: FolderIcon, current: false },
   { name: 'Ads', to: '/ads', icon: CalendarIcon, current: false },
-  { name: 'Documents', to: '/documents', icon: DocumentDuplicateIcon, current: false },
+  { name: 'Publishers', to: '/publishers', icon: DocumentDuplicateIcon, current: false },
   { name: 'Reports', to: '/reports', icon: ChartPieIcon, current: false },
 ];
 
@@ -120,6 +121,7 @@ export default function MainLayout() {
               <Route path='/advertisers' element={<Advertisers />} />
               <Route path='/campaigns' element={<Campaigns />} />
               <Route path='/ads' element={<Ads />} />
+              <Route path='/publishers' element={<Publishers />} />
             </Routes>
           </div>
         </main>

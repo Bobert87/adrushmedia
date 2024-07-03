@@ -69,8 +69,20 @@ class Advertiser {
 	async getAll(req, res) {
 		try {
 			const include = req.query.include;
-			const advertisers = await this.advertiserModel.getAll(include);
+			const sort = req.query.sort;
+			const options = {include,sort}
+			const advertisers = await this.advertiserModel.getAll(options);
 			res.json(advertisers);
+		} catch (error) {
+			res.status(500).json({ error: error.message });
+		}
+	}
+
+	async getStats(req, res) {
+		try {			
+			console.log('hhhh')
+			const stats = await this.advertiserModel.getStats();
+			res.json(stats);
 		} catch (error) {
 			res.status(500).json({ error: error.message });
 		}
