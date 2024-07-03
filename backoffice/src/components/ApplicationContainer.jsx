@@ -5,13 +5,14 @@ import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from '@headlessu
 import { CalendarIcon, ChartPieIcon, Cog6ToothIcon, DocumentDuplicateIcon, FolderIcon, HomeIcon, UsersIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import StickySearchBar from './StickySearchBar';
 import Campaigns from '../pages/Campaigns';
+import Ads from '../pages/Ads';
 
 
 const navigation = [
   { name: 'Dashboard', to: '/', icon: HomeIcon, current: true },
   { name: 'Advertisers', to: '/advertisers', icon: UsersIcon, current: false },
   { name: 'Campaigns', to: '/campaigns', icon: FolderIcon, current: false },
-  { name: 'Calendar', to: '/calendar', icon: CalendarIcon, current: false },
+  { name: 'Ads', to: '/ads', icon: CalendarIcon, current: false },
   { name: 'Documents', to: '/documents', icon: DocumentDuplicateIcon, current: false },
   { name: 'Reports', to: '/reports', icon: ChartPieIcon, current: false },
 ];
@@ -118,6 +119,7 @@ export default function MainLayout() {
             <Routes>
               <Route path='/advertisers' element={<Advertisers />} />
               <Route path='/campaigns' element={<Campaigns />} />
+              <Route path='/ads' element={<Ads />} />
             </Routes>
           </div>
         </main>

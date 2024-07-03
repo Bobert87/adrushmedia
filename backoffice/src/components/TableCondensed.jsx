@@ -38,7 +38,8 @@ export default function DataTable({ headers, data }) {
 				if (aValue === bValue) return 0;
 				if (sortConfig.direction === SortDirection.ASC) {
 					return aValue < bValue ? -1 : 1;
-				} else {
+				}
+				if (sortConfig.direction === SortDirection.DESC) {
 					return aValue > bValue ? -1 : 1;
 				}
 			});
@@ -71,7 +72,9 @@ export default function DataTable({ headers, data }) {
 							<thead>
 								<tr>
 									{headers.map((header, index) => (
+										// biome-ignore lint/a11y/useKeyWithClickEvents: <explanation>
 										<th
+											// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 											key={index}
 											scope="col"
 											className="whitespace-nowrap py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0 cursor-pointer"
@@ -90,9 +93,11 @@ export default function DataTable({ headers, data }) {
 							</thead>
 							<tbody className="divide-y divide-gray-200 bg-white">
 								{paginatedData().map((item, rowIndex) => (
+									// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 									<tr key={rowIndex}>
 										{headers.map((header, colIndex) => (
 											<td
+												// biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
 												key={colIndex}
 												className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-500 sm:pl-0"
 											>
@@ -116,14 +121,15 @@ export default function DataTable({ headers, data }) {
 				</div>
 				<div className="mt-4 flex justify-between items-center space-x-10">
 					<div className="flex space-x-2 items-center">
+						{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 						<button
 							onClick={() => handlePageChange(currentPage - 1)}
 							disabled={currentPage === 1}
 							className="p-1 rounded-md bg-gray-200 text-gray-700 font-medium shadow-sm hover:bg-gray-300 focus:outline-none flex items-center"
-						>    
+						>
 							<ChevronLeftIcon className="h-4 w-4" />
-                            
 						</button>
+						{/* biome-ignore lint/a11y/useButtonType: <explanation> */}
 						<button
 							onClick={() => handlePageChange(currentPage + 1)}
 							disabled={currentPage === totalPages}
@@ -150,7 +156,7 @@ export default function DataTable({ headers, data }) {
 			</div>
 		</div>
 	);
-};
+}
 
 const pickPillColor = (value) => {
 	switch (value) {
@@ -158,46 +164,45 @@ const pickPillColor = (value) => {
 			return "bg-green-100 text-green-800";
 		case "PAUSED":
 			return "bg-orange-100 text-orange-800";
-        case "PENDING":
-                return "bg-orange-100 text-orange-800";
-        case "DRAFT":
-                return "bg-blue-100 text-blue-800";
+		case "PENDING":
+			return "bg-orange-100 text-orange-800";
+		case "DRAFT":
+			return "bg-blue-100 text-blue-800";
 		case "OVERDUE":
 			return "bg-red-100 text-red-800";
 		case "MAXED_OUT":
 			return "bg-purple-100 text-purple-800";
-        case "CANCELLED":
-            return "bg-red-100 text-red-800";            
+		case "CANCELLED":
+			return "bg-red-100 text-red-800";
 		default:
 			return "bg-gray-100 text-gray-800";
 	}
 };
 
 const renderCell = (value, header, row) => {
+	const formatDateMY = (dateString) => {
+		const options = { month: "long", year: "numeric" };
+		const date = new Date(dateString);
+		return date.toLocaleDateString("en-US", options);
+	};
 
-    const formatDateMY = (dateString) => {
-        const options = { month: 'long', year: 'numeric' };
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', options);
-    };
+	const formatDateMMDDYYYY = (dateString) => {
+		const date = new Date(dateString);
+		const month = (date.getMonth() + 1).toString().padStart(2, "0");
+		const day = date.getDate().toString().padStart(2, "0");
+		const year = date.getFullYear();
+		return `${month}/${day}/${year}`;
+	};
 
-    const formatDateMMDDYYYY = (dateString) => {
-        const date = new Date(dateString);
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        const year = date.getFullYear();
-        return `${month}/${day}/${year}`;
-    };
-
-    const formatDateMMDDYYYYHHmm = (dateString) => {
-        const date = new Date(dateString);
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const day = date.getDate().toString().padStart(2, '0');
-        const year = date.getFullYear();
-        const hours = date.getHours().toString().padStart(2, '0');
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        return `${month}/${day}/${year} ${hours}:${minutes}`;
-    };
+	const formatDateMMDDYYYYHHmm = (dateString) => {
+		const date = new Date(dateString);
+		const month = (date.getMonth() + 1).toString().padStart(2, "0");
+		const day = date.getDate().toString().padStart(2, "0");
+		const year = date.getFullYear();
+		const hours = date.getHours().toString().padStart(2, "0");
+		const minutes = date.getMinutes().toString().padStart(2, "0");
+		return `${month}/${day}/${year} ${hours}:${minutes}`;
+	};
 
 	const dataType = header.dataType;
 	const actionKey = header.actionKey;
@@ -217,12 +222,12 @@ const renderCell = (value, header, row) => {
 					{value}
 				</span>
 			);
-        case "dateMY":
-                return formatDateMY(value); // Format date as "Month, Year"
-        case "dateMMDDYYYY":
-                return formatDateMMDDYYYY(value); // Format date as "Month, Year"
-        case "dateMMDDYYYYHHmm":
-                return formatDateMMDDYYYYHHmm(value); // Format date as "Month, Year"
+		case "dateMY":
+			return formatDateMY(value); // Format date as "Month, Year"
+		case "dateMMDDYYYY":
+			return formatDateMMDDYYYY(value); // Format date as "Month, Year"
+		case "dateMMDDYYYYHHmm":
+			return formatDateMMDDYYYYHHmm(value); // Format date as "Month, Year"
 		case "action":
 			return (
 				<Link to={path} className="text-indigo-600 hover:text-indigo-900">
@@ -233,194 +238,3 @@ const renderCell = (value, header, row) => {
 			return value;
 	}
 };
-
- function Example() {
-	const transactions = [
-		{
-			id: "1",
-			company: "Chase & Co.",
-			share: "ACTIVE",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "2",
-			company: "Chase & Co.",
-			share: "PAUSED",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "3",
-			company: "Chase & Co.",
-			share: "MAXED_OUT",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CA4C",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		{
-			id: "AAPS0L",
-			company: "Chase & Co.",
-			share: "CAC2",
-			commission: "+$4.37",
-			price: "3509.00",
-			quantity: "12.00",
-			netAmount: "4397.00",
-		},
-		// More transactions...
-	];
-
-
-
-	return <DataTable  data={transactions} />;
-}
