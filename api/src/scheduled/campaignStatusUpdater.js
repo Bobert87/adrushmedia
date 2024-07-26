@@ -45,6 +45,7 @@ class CampaignStatusUpdater {
 			for (const dayImpressions of campaign){
 				const now = new Date().getDate();
 				const isToday = dayImpressions.date.getDate() === now;
+				// TODO: make sure dailyBudget existis else isMaxedOutForDay should be false
 				const isMaxedOutForDay = dayImpressions.sumAmount > dayImpressions.dailyBudget;
 				const isActive = dayImpressions.status === CampaignStatus.ACTIVE;
 				if (isToday && isMaxedOutForDay && isActive) {
@@ -59,6 +60,7 @@ class CampaignStatusUpdater {
 				}
 			}			
 			const amount = campaign.reduce((acc, dayImpressions) => acc + Number.parseFloat(dayImpressions.sumAmount), 0);
+			// TODO: make sure dailyBudget existis else isMaxedOutForMounth should be false
 			const isMaxedOutForMonth = amount > campaign[0].monthlyBudget;
 			const isActive = campaign[0].status === CampaignStatus.ACTIVE;
 			if (isMaxedOutForMonth && isActive){				
