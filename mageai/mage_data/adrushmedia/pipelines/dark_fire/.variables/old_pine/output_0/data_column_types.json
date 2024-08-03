@@ -1,0 +1,1 @@
+{"id": "int64", "name": "str", "type": "str", "email": "str", "phone": "str", "address": "str", "term": "str", "status": "str", "createdAt": "datetime64[ns]", "updatedAt": "datetime64[ns]"}
